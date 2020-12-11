@@ -1,4 +1,4 @@
-package com.example.myapplication;
+package temp;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -9,8 +9,10 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import com.example.myapplication.R;
 import com.example.myapplication.Thread.ThreadTask;
 import com.example.myapplication.Thread.ThreadTask_getData;
+import com.example.myapplication.Utils;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;

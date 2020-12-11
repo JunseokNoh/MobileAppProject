@@ -32,6 +32,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 
+import temp.Sensor_inform;
+
 class RecycleAdaptors extends RecyclerView.Adapter<RecycleAdaptors.CustomViewHolder> implements ItemTouchHelperListener{
 
     ArrayList<SampleData> notepadDataList;

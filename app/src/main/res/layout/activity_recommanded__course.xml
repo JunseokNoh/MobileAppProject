@@ -37,6 +37,7 @@
                         android:layout_height="58dp"
                         android:layout_gravity="center"
                         android:gravity="center"
+                        android:text=""
                         android:textColor="@color/login_font"
                         android:textSize="18sp"
                         android:textStyle="bold"
@@ -59,22 +60,42 @@
                     android:layout_height="fill_parent"
                     android:layout_weight="1"
                     android:id="@+id/container"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    >
+                    <fragment
+                        android:name="com.google.android.gms.maps.MapFragment"
+                        android:id="@+id/map"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                    />
 
                 </LinearLayout>
 
                 <LinearLayout
-                    android:layout_width="412dp"
-                    android:layout_height="74dp"
-                    android:layout_weight="0">
+                    android:layout_width="match_parent"
+                    android:layout_height="350dp"
+                    android:layout_weight="0"
+                    android:orientation="vertical">
 
-                    <com.google.android.material.bottomnavigation.BottomNavigationView
-                        android:id="@+id/bottom_navigation"
-                        android:layout_width="412dp"
-                        android:layout_height="74dp"
-                        android:background="@drawable/edge"
-                        app:menu="@menu/menu_bottom" />
-
+                    <LinearLayout
+                        android:id="@+id/recommended_courses_Linear_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="290dp">
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/recommended_courses_Recycler_view"
+                            android:layout_width="match_parent"
+                            android:layout_height="304dp" />
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/recommended_courses_confirm"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:text="확인"
+                            android:textSize="18sp"/>
+                    </LinearLayout>
                 </LinearLayout>
 
             </LinearLayout>
@@ -82,27 +103,27 @@
 
 
 
-       <!--  <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/MainActivity_toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="58dp"
-            android:background="@drawable/edge7"
-            >
+        <!--  <com.google.android.material.appbar.MaterialToolbar
+             android:id="@+id/MainActivity_toolbar"
+             android:layout_width="match_parent"
+             android:layout_height="58dp"
+             android:background="@drawable/edge7"
+             >
 
-            <com.google.android.material.textview.MaterialTextView
-                android:layout_width="wrap_content"
-                android:layout_height="58dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/materialTextView"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:text="홈"
-                android:gravity="center"
-                android:layout_gravity ="center"
-                />
-        </com.google.android.material.appbar.MaterialToolbar>-->
+             <com.google.android.material.textview.MaterialTextView
+                 android:layout_width="wrap_content"
+                 android:layout_height="58dp"
+                 app:layout_constraintEnd_toEndOf="parent"
+                 app:layout_constraintHorizontal_bias="0.0"
+                 app:layout_constraintStart_toStartOf="parent"
+                 app:layout_constraintTop_toBottomOf="@+id/materialTextView"
+                 android:textSize="20sp"
+                 android:textStyle="bold"
+                 android:text="홈"
+                 android:gravity="center"
+                 android:layout_gravity ="center"
+                 />
+         </com.google.android.material.appbar.MaterialToolbar>-->
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

@@ -18,7 +18,10 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:ignore="MissingClass">
-        <activity android:name=".Change_PW"></activity>
+        <activity android:name=".Recommanded_Course"></activity>
+        <activity android:name=".ResetPW" />
+        <activity android:name=".FindEmail" />
+        <activity android:name=".Change_PW" />
         <activity android:name=".User_inform" />
         <activity android:name=".Tutorial" />
         <activity android:name=".NearHospital" />
@@ -30,7 +33,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".FalldownActivity" />
-        <activity android:name=".Sensor_inform" />
+        <activity android:name="temp.Sensor_inform" />
         <activity android:name=".DaumWebViewActivity" />
         <activity android:name=".delete_accout_activity" />
         <activity android:name=".account_register_complete" />

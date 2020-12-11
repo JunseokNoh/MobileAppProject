@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -32,6 +33,7 @@ import android.util.Base64;
 import android.util.Log;
 import android.view.MenuItem;
 
+import android.view.View;
 import android.widget.Toast;
 
 import com.example.myapplication.Thread.ThreadTask;
@@ -87,9 +89,10 @@ public class MainActivity<pirvate> extends AppCompatActivity implements Navigati
     private RecyclerView.Adapter recycle_adapter;
     private RecyclerView.LayoutManager layoutManager;
     private RecycleAdaptors recycleAdaptors;
+    private static final int SEARCH_ADDRESS_ACTIVITY = 10001;
 
     private Home_fragment home_fragment;
-    private Sensor_fragment sensor_fragment;
+    private CustomCourse customCourse_fragment;
     private Mypage_fragment mypage_fragment;
     private Hospital_fragment hospital_fragment;
 
@@ -107,6 +110,8 @@ public class MainActivity<pirvate> extends AppCompatActivity implements Navigati
 
     private SharedPreferences login_information_pref;
     private String Email;
+    private String Address;
+
     private Class<LoginActivity> loginActivity;
 
     @Override
@@ -117,54 +122,61 @@ public class MainActivity<pirvate> extends AppCompatActivity implements Navigati
 
         Utils.setStatusBarColor(this, Utils.StatusBarcolorType.BLACK_STATUS_BAR);
         home_fragment = new Home_fragment();
-        sensor_fragment = new Sensor_fragment();
+        customCourse_fragment = new CustomCourse();
         mypage_fragment = new Mypage_fragment();
         hospital_fragment = new Hospital_fragment();
 
         login_information_pref = getSharedPreferences("login_information", Context.MODE_PRIVATE);
         Email = login_information_pref.getString("email", "");
-
+        Address = login_information_pref.getString("address", "주소를 선택해주세요.");
         ip = getString(R.string.server_ip);
 
         /*홈 fragment로 내용 채워줌*/
         getSupportFragmentManager().beginTransaction().replace(R.id.container, home_fragment).commit();
 
         toolbar = (MaterialToolbar)findViewById(R.id.MainActiviy_toolbar);
+        toolbar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplication(), DaumWebViewActivity.class);
+                startActivityForResult(intent, SEARCH_ADDRESS_ACTIVITY);
+            }
+        });
         setSupportActionBar(toolbar);
         actionBar = getSupportActionBar();
         actionBar.setDisplayShowCustomEnabled(true);
         actionBar.setDisplayShowTitleEnabled(false);
         toolbartext = (MaterialTextView)findViewById(R.id.toolbar_textview);
-
+        toolbartext.setText(Address);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             checkPermission();
         }
 
         //actionBar.setDisplayHomeAsUpEnabled(true); 뒤로가기 버튼, 현재 흰색이라서 생성해도 보이지는 않음 필요는없
 
-        //getSupportFragmentManager().beginTransaction().replace(R.id.container , home_fragment).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.container , home_fragment).commit();
 
         BottomNavigationView bottomNavigation = findViewById(R.id.bottom_navigation);
         bottomNavigation.setOnNavigationItemSelectedListener(
                 new BottomNavigationView.OnNavigationItemSelectedListener() {
                     @Override
                     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-
+                        Address = login_information_pref.getString("address", "주소를 선택해주세요.");
                         switch (item.getItemId()){
                             case R.id.tab1:
                                 //Toast.makeText(getApplicationContext(), "1", Toast.LENGTH_SHORT).show();
                                 getSupportFragmentManager().beginTransaction().replace(R.id.container, home_fragment).commit();
-                                toolbartext.setText("안녕하세요!");
+                                toolbartext.setText(Address);
                                 return true;
                             case R.id.tab2 :
                                 //Toast.makeText(getApplicationContext(), "2", Toast.LENGTH_SHORT).show();
-                                getSupportFragmentManager().beginTransaction().replace(R.id.container, sensor_fragment).commit();
-                                toolbartext.setText("센서를 관리해주세요");
+                                getSupportFragmentManager().beginTransaction().replace(R.id.container, customCourse_fragment).commit();
+                                toolbartext.setText(Address);
                                 return true;
                             case R.id.tab3 :
                                 //Toast.makeText(getApplicationContext(), "3", Toast.LENGTH_SHORT).show();
                                 getSupportFragmentManager().beginTransaction().replace(R.id.container, mypage_fragment).commit();
-                                toolbartext.setText("회원님의 정보입니다");
+                                toolbartext.setText(Address);
                                 return true;
                             case R.id.tab4 :
                                 //Toast.makeText(getApplicationContext(), "3", Toast.LENGTH_SHORT).show();
@@ -605,6 +617,25 @@ public class MainActivity<pirvate> extends AppCompatActivity implements Navigati
 
     }
 
+    public void onActivityResult(int requestCode, int resultCode, Intent intent)
+    {
+        super.onActivityResult(requestCode, resultCode, intent);
+        switch (requestCode) {
+            case SEARCH_ADDRESS_ACTIVITY:
+                if (resultCode == RESULT_OK) {
+                    String data = intent.getExtras().getString("data");
+                    if (data != null) {
+                        toolbartext.setText(data);
+                        login_information_pref = getSharedPreferences("login_information", Context.MODE_PRIVATE);
+                        SharedPreferences.Editor login_log_editor = login_information_pref.edit();
+                        login_log_editor.putString("address", data);
+                        login_log_editor.commit();
+                    }
+                }
+                break;
+        }
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item){
         switch (item.getItemId()){
@@ -638,7 +669,7 @@ public class MainActivity<pirvate> extends AppCompatActivity implements Navigati
                 // Manifest는 android를 import
                 Manifest.permission.ACCESS_COARSE_LOCATION,
                 Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.CALL_PHONE
+                //Manifest.permission.CALL_PHONE
         };
 
         int permissionCheck = PackageManager.PERMISSION_GRANTED;

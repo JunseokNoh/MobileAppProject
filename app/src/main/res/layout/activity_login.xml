@@ -228,7 +228,7 @@
         android:gravity="center"
         android:paddingLeft="12dp"
         android:selectAllOnFocus="true"
-        android:text="낙상이 발생하면 빠르게 알려드릴게요"
+        android:text=""
         android:textStyle="bold"
         android:textColor="@color/login_font"
         android:textSize="18sp"

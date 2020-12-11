@@ -3,6 +3,7 @@ package com.example.myapplication;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -17,8 +18,12 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.dinuscxj.progressbar.CircleProgressBar;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.textview.MaterialTextView;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.ResourceBundle;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -36,16 +41,14 @@ public class Home_fragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    private CircleProgressBar circleProgressBar;
-    private CircleProgressBar Fall_down_bar;
+    private RecyclerView recyclerView;
+    private RecycleAdaptors_Curse_rank recycleAdaptors;
+    private  RecyclerView.LayoutManager layoutManager;
 
-    private SharedPreferences sensor_status_pref;
-    private SharedPreferences.Editor sensor_status_editor;
-    private Thread thread;
+    private MaterialButton Recommended_button;
 
     public Home_fragment() {
         // Required empty public constructor
-
     }
 
     /**
@@ -78,73 +81,46 @@ public class Home_fragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        String ip = getString(R.string.server_ip);
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_home_fragment, container, false);
-        feedMultiple(v);
+//        View header = inflater.inflate(R.layout.activity_main, null, false);
+//        MaterialTextView toolbartext = (MaterialTextView) header.findViewById(R.id.toolbar_textview);
+//
+//        SharedPreferences login_information_pref = getActivity().getSharedPreferences("login_information", Context.MODE_PRIVATE);
+//        String Address = login_information_pref.getString("address", "주소를 선택해주세요.");
 
+//        toolbartext.setText(Address);
+        Recommended_button = v.findViewById(R.id.recommended_courses);
+        Recommended_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), Recommanded_Course.class);
+                startActivity(intent);
+            }
+        });
+        recyclerView = (RecyclerView)v.findViewById(R.id.Recycler_view);
+
+        layoutManager =  new LinearLayoutManager(getActivity());
+        if(layoutManager != null){
+            recyclerView.setLayoutManager(layoutManager);
+        }
+        else{
+            Log.e("SensorFragment", "Error");
+        }
+
+        ArrayList<Course_rank> courseRanksList = new ArrayList<Course_rank>();
+        courseRanksList.add(new Course_rank("수성구 데이트 코스"));
+        courseRanksList.add(new Course_rank("동성로 데이트 코스"));
+        courseRanksList.add(new Course_rank("앞산 데이트 코스"));
+
+        recycleAdaptors = new RecycleAdaptors_Curse_rank(ip);
+
+        recycleAdaptors.setItems(courseRanksList);
+        recyclerView.setAdapter(recycleAdaptors);
 
         return v;
     }
-    private void setCircleProgressBar(View v){
-        sensor_status_pref = getActivity().getSharedPreferences("Sensor_status", Activity.MODE_PRIVATE);
-        sensor_status_editor = sensor_status_pref.edit();
 
-//        int sensor_total_count = Integer.parseInt(sensor_status_pref.getString("sensor_total_count", "0"));
-//        int sensor_on_count = Integer.parseInt(sensor_status_pref.getString("sensor_on_count", "0"));
-       // int falldown_count = Integer.parseInt(sensor_status_pref.getString("falldown_count", "0"));
-        int sensor_total_count = 4;
-        int sensor_on_count = 3 ;
-        int falldown_count = 3;
-
-        float sensor_rate = (float) sensor_on_count /(float)sensor_total_count;
-        float falldown_reate = (float) ((float)falldown_count / 5.0);
-        Log.e("sensor_rate", Float.toString(sensor_rate));
-//        sensor_status_editor = sensor_status_pref.edit();
-//        sensor_status_editor.putString("sensor_on_count" ,Integer.toString(sensor_on_count) );
-//        sensor_status_editor.commit();
-
-        circleProgressBar = v.findViewById(R.id.contected_sensor);
-        circleProgressBar.setProgress((int) (sensor_rate * 100));
-        circleProgressBar.setProgressFormatter((progress, max) -> {
-            final String DEFAULT_PATTERN = "%d/%d개"   ;
-            //return String.format(DEFAULT_PATTERN, (int) ((float) progress /(float) max * 100));
-            return String.format(DEFAULT_PATTERN, sensor_on_count, sensor_total_count);
-        });
-
-        Fall_down_bar = v.findViewById(R.id.fall_down_count);
-        Fall_down_bar.setProgress((int) (falldown_reate * 100));
-        Fall_down_bar.setProgressFormatter((progress, max) -> {
-            final String DEFAULT_PATTERN = "%d번"   ;
-            //return String.format(DEFAULT_PATTERN, (int) ((float) progress /(float) max * 100));
-            return String.format(DEFAULT_PATTERN, falldown_count);
-        });
-    }
-
-    private void feedMultiple(View v) {
-
-        if (thread != null) thread.interrupt();
-        final Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                setCircleProgressBar(v);
-            }
-        };
-        thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (true) {
-                    if(getActivity() == null)
-                        return;
-                    getActivity().runOnUiThread(runnable);
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException ie) {
-                        ie.printStackTrace();
-                    }
-                }
-            }
-        });
-        thread.start();
-    }
 
 }
