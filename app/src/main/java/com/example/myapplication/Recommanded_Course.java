@@ -8,6 +8,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.app.FragmentManager;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -37,6 +39,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Recommanded_Course extends AppCompatActivity  implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener{
 
@@ -68,6 +71,8 @@ public class Recommanded_Course extends AppCompatActivity  implements OnMapReady
 
     private String ip;
     private String input;
+    private List<Address> list = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -81,6 +86,7 @@ public class Recommanded_Course extends AppCompatActivity  implements OnMapReady
         actionBar = getSupportActionBar();
         actionBar.setDisplayShowCustomEnabled(true);
         actionBar.setDisplayShowTitleEnabled(false);
+        actionBar.setDisplayHomeAsUpEnabled(true);
         toolbartext = (MaterialTextView)findViewById(R.id.toolbar_textview);
 
         login_information_pref = getSharedPreferences("login_information", Context.MODE_PRIVATE);
@@ -149,7 +155,21 @@ public class Recommanded_Course extends AppCompatActivity  implements OnMapReady
                         Starting_latitude = Latitude;
                         Starting_longitude = Longitude;
                     }
-                    course_list.add(new course_item(Place_name, Latitude, Longitude));
+
+                    final Geocoder geocoder = new Geocoder(getApplication());
+                    try {
+                        list = geocoder.getFromLocation(Double.parseDouble(Latitude),Double.parseDouble(Longitude), 10);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    android.location.Address addr = list.get(0);
+                    String Place_detail = addr.getAddressLine(0);
+                    if(j == 0){
+                        Starting_latitude = Latitude;
+                        Starting_longitude = Longitude;
+                    }
+                    course_list.add(new course_item(Place_name, Place_detail, Latitude, Longitude));
                     Log.e("Recommanded_Course_Test", String.format("%s %s %s", Place_name, Latitude, Longitude));
                 }
                 RecommandedCourseDataList.add(new Recommanded_course_item(Course_name, Course_id, course_list));

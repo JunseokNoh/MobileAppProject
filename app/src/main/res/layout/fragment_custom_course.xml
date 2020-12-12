@@ -33,7 +33,7 @@
                     android:layout_weight="1"
                     android:orientation="vertical">
 
-                    <fragment
+                    <com.google.android.gms.maps.MapView
                         android:id="@+id/map"
                         android:name="com.google.android.gms.maps.MapFragment"
                         android:layout_width="match_parent"
@@ -43,7 +43,7 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="400dp"
+                    android:layout_height="350dp"
                     android:layout_marginLeft="15dp"
                     android:layout_marginRight="15dp"
                     android:layout_weight="0"
@@ -55,6 +55,7 @@
                         android:layout_gravity="right">
 
                         <com.google.android.material.button.MaterialButton
+                            android:id="@+id/Create_new_destination"
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
                             android:layout_gravity="right"
@@ -64,10 +65,10 @@
                     <LinearLayout
                         android:id="@+id/recommended_courses_Linear_layout"
                         android:layout_width="match_parent"
-                        android:layout_height="290dp">
+                        android:layout_height="230dp">
 
                         <androidx.recyclerview.widget.RecyclerView
-                            android:id="@+id/recommended_courses_Recycler_view"
+                            android:id="@+id/custom_course_Recycler_view"
                             android:layout_width="match_parent"
                             android:layout_height="304dp" />
                     </LinearLayout>
@@ -77,7 +78,7 @@
                         android:layout_height="match_parent">
 
                         <com.google.android.material.button.MaterialButton
-                            android:id="@+id/recommended_courses_confirm"
+                            android:id="@+id/Custom_courses_confirm"
                             android:layout_width="match_parent"
                             android:layout_height="60dp"
                             android:text="저장"

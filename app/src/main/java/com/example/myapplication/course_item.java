@@ -6,11 +6,17 @@ public class course_item {
     private String Place_name;
     private String Latitude;
     private String Longitude;
+    private String Address;
 
-    public course_item(String place_name, String latitude, String longitude){
+    public course_item(String place_name, String address, String latitude, String longitude){
         Place_name = place_name;
+        Address = address;
         Latitude = latitude;
         Longitude = longitude;
+    }
+
+    public void setAddress(String address) {
+        Address = address;
     }
 
     public void setLatitude(String latitude) {
@@ -35,5 +41,9 @@ public class course_item {
 
     public String getPlace_name() {
         return Place_name;
+    }
+
+    public String getAddress() {
+        return Address;
     }
 }

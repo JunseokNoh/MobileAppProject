@@ -125,6 +125,7 @@ public class Mypage_fragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_mypage_fragment, container, false);
+        ((MainActivity)getActivity()).resetToolbar();
         mOAuthLoginModule = OAuthLogin.getInstance();
         ip = getResources().getString(R.string.server_ip);
         //유저 정보가 담겨있는 shared preference

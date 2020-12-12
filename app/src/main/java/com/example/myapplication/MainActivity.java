@@ -11,17 +11,21 @@ import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
@@ -112,6 +116,8 @@ public class MainActivity<pirvate> extends AppCompatActivity implements Navigati
     private String Email;
     private String Address;
 
+    Bundle mbundle;
+
     private Class<LoginActivity> loginActivity;
 
     @Override
@@ -129,6 +135,10 @@ public class MainActivity<pirvate> extends AppCompatActivity implements Navigati
         login_information_pref = getSharedPreferences("login_information", Context.MODE_PRIVATE);
         Email = login_information_pref.getString("email", "");
         Address = login_information_pref.getString("address", "주소를 선택해주세요.");
+        if(Address.equals("주소를 선택해주세요.")){
+            showDialog();
+        }
+
         ip = getString(R.string.server_ip);
 
         /*홈 fragment로 내용 채워줌*/
@@ -142,12 +152,14 @@ public class MainActivity<pirvate> extends AppCompatActivity implements Navigati
                 startActivityForResult(intent, SEARCH_ADDRESS_ACTIVITY);
             }
         });
+
         setSupportActionBar(toolbar);
         actionBar = getSupportActionBar();
         actionBar.setDisplayShowCustomEnabled(true);
         actionBar.setDisplayShowTitleEnabled(false);
         toolbartext = (MaterialTextView)findViewById(R.id.toolbar_textview);
         toolbartext.setText(Address);
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             checkPermission();
         }
@@ -229,32 +241,82 @@ public class MainActivity<pirvate> extends AppCompatActivity implements Navigati
         });
 
     }
-    private void getHeadup(String title, String body){
-        Intent snoozeIntent = new Intent(this,RegisterActivity.class);
-        snoozeIntent.setAction("ACTION_SNOOZE");
-        snoozeIntent.putExtra("EXTRA_NOTIFICATION_ID", 0);
-        PendingIntent snoozePendingIntent =
-                PendingIntent.getBroadcast(this, 0, snoozeIntent, 0);
 
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_menu_slideshow)
-                .setContentTitle(title)
-                .setContentText(body)
-                .setStyle(new NotificationCompat.BigTextStyle()
-                        .bigText(body))
-                .setPriority(NotificationCompat.PRIORITY_MAX)
-                .setDefaults(Notification.DEFAULT_VIBRATE)
-                .setFullScreenIntent(snoozePendingIntent, false)
-                .setContentIntent(snoozePendingIntent);
-        //.setAutoCancel(true);
-
-
-        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
-
-        // notificationId is a unique int for each notification that you must define
-        int notificationId = 15;
-        notificationManager.notify(notificationId, builder.build());
+    String getAddress(){
+        return Address;
     }
+
+    void showDialog() {
+        AlertDialog.Builder msgBuilder = new AlertDialog.Builder(MainActivity.this)
+                .setTitle("알림")
+                .setMessage("주소가 설정되어있지 않습니다.\n검색할 주소를 먼저 설정해주세요.")
+                .setPositiveButton("주소 설정하기", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent = new Intent(getApplication(), DaumWebViewActivity.class);
+                        startActivityForResult(intent, SEARCH_ADDRESS_ACTIVITY);
+                    }
+                });
+//                .setNegativeButton("취소", new DialogInterface.OnClickListener() {
+//                    @Override public void onClick(DialogInterface dialogInterface, int i) {
+//
+//                    } });
+        AlertDialog msgDlg = msgBuilder.create();
+        msgDlg.show();
+    }
+    public void setToolbar(){
+        toolbar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplication(), DaumWebViewActivity.class);
+                startActivityForResult(intent, SEARCH_ADDRESS_ACTIVITY);
+            }
+        });
+    }
+    public void resetToolbar(){
+        toolbar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+    }
+    public void replaceFragment(Fragment fragment){
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.container, fragment).commit();
+    }
+
+    public void onMoveCustomcourse(Bundle args){
+        mbundle = args;
+        getSupportFragmentManager().beginTransaction().replace(R.id.container, customCourse_fragment).commit();
+    }
+//    private void getHeadup(String title, String body){
+//        Intent snoozeIntent = new Intent(this,RegisterActivity.class);
+//        snoozeIntent.setAction("ACTION_SNOOZE");
+//        snoozeIntent.putExtra("EXTRA_NOTIFICATION_ID", 0);
+//        PendingIntent snoozePendingIntent =
+//                PendingIntent.getBroadcast(this, 0, snoozeIntent, 0);
+//
+//        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
+//                .setSmallIcon(R.drawable.ic_menu_slideshow)
+//                .setContentTitle(title)
+//                .setContentText(body)
+//                .setStyle(new NotificationCompat.BigTextStyle()
+//                        .bigText(body))
+//                .setPriority(NotificationCompat.PRIORITY_MAX)
+//                .setDefaults(Notification.DEFAULT_VIBRATE)
+//                .setFullScreenIntent(snoozePendingIntent, false)
+//                .setContentIntent(snoozePendingIntent);
+//        //.setAutoCancel(true);
+//
+//
+//        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+//
+//        // notificationId is a unique int for each notification that you must define
+//        int notificationId = 15;
+//        notificationManager.notify(notificationId, builder.build());
+//    }
 
     private int send_token_response(String request_email, String token){
 
@@ -680,23 +742,23 @@ public class MainActivity<pirvate> extends AppCompatActivity implements Navigati
             }
         }
         //전화 승인
-        if (permissionCheck == PackageManager.PERMISSION_DENIED) {
-            this.requestPermissions(permissions, 1);
-        }
-        if(ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE )!= PackageManager.PERMISSION_GRANTED){
-            if(ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CALL_PHONE)){
-                /**
-                 * 거절 했을 때
-                 * */
-            }
-            else{
-                /**
-                 * 승인했을 때
-                 * */
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CALL_PHONE},
-                        1000);
-            }
-        }
+//        if (permissionCheck == PackageManager.PERMISSION_DENIED) {
+//            this.requestPermissions(permissions, 1);
+//        }
+//        if(ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE )!= PackageManager.PERMISSION_GRANTED){
+//            if(ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CALL_PHONE)){
+//                /**
+//                 * 거절 했을 때
+//                 * */
+//            }
+//            else{
+//                /**
+//                 * 승인했을 때
+//                 * */
+//                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CALL_PHONE},
+//                        1000);
+//            }
+//        }
     }
 }
 

@@ -18,7 +18,9 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:ignore="MissingClass">
-        <activity android:name=".Recommanded_Course"></activity>
+        <activity android:name=".Categories_coures"></activity>
+        <activity android:name=".choice_category" />
+        <activity android:name=".Recommanded_Course" />
         <activity android:name=".ResetPW" />
         <activity android:name=".FindEmail" />
         <activity android:name=".Change_PW" />

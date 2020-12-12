@@ -120,7 +120,7 @@ class RecycleAdaptors_recommended_Curse_rank extends RecyclerView.Adapter<Recycl
                     latngs.add(new LatLng(Latitude, Longtitude));
                     polylineOptions.add(new LatLng(Latitude,Longtitude));
                     LatLng Starting_Point = new LatLng(Latitude, Longtitude); // 스타팅 지점
-                    googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(Starting_Point, 15));
+                    googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(Starting_Point, 14));
 
                     tv_marker.setText(course_list.get(i).getPlace_name());
                     markerOptions.position(new LatLng(Latitude,Longtitude));

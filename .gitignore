@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 *.iml
 .gradle
 /local.properties
@@ -12,3 +13,9 @@
 /captures
 .externalNativeBuild
 .cxx
+=======
+# Project exclude paths
+/.gradle/
+/app/build/
+/app/build/intermediates/javac/debug/classes/
+>>>>>>> Stashed changes

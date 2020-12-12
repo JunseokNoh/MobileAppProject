@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/My_Application.iml" filepath="$PROJECT_DIR$/.idea/modules/My_Application.iml" group="My_Application" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/app.iml" group="My Application/app" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/applications/applications.iml" filepath="$PROJECT_DIR$/.idea/modules/applications/applications.iml" group="My Application/applications" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/libraries/auth/auth.iml" filepath="$PROJECT_DIR$/.idea/modules/libraries/auth/auth.iml" group="My Application/libraries/auth" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/libraries/common/common.iml" filepath="$PROJECT_DIR$/.idea/modules/libraries/common/common.iml" group="My Application/libraries/common" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/libraries/friends/friends.iml" filepath="$PROJECT_DIR$/.idea/modules/libraries/friends/friends.iml" group="My Application/libraries/friends" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/applications/kakao-open-android-link-sample/kakao-open-android-link-sample.iml" filepath="$PROJECT_DIR$/.idea/modules/applications/kakao-open-android-link-sample/kakao-open-android-link-sample.iml" group="My Application/applications/kakao-open-android-link-sample" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/applications/kakao-open-android-navi-sample/kakao-open-android-navi-sample.iml" filepath="$PROJECT_DIR$/.idea/modules/applications/kakao-open-android-navi-sample/kakao-open-android-navi-sample.iml" group="My Application/applications/kakao-open-android-navi-sample" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/applications/kakao-open-android-sdk-sample/kakao-open-android-sdk-sample.iml" filepath="$PROJECT_DIR$/.idea/modules/applications/kakao-open-android-sdk-sample/kakao-open-android-sdk-sample.iml" group="My Application/applications/kakao-open-android-sdk-sample" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/libraries/kakaolink/kakaolink.iml" filepath="$PROJECT_DIR$/.idea/modules/libraries/kakaolink/kakaolink.iml" group="My Application/libraries/kakaolink" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/libraries/kakaonavi/kakaonavi.iml" filepath="$PROJECT_DIR$/.idea/modules/libraries/kakaonavi/kakaonavi.iml" group="My Application/libraries/kakaonavi" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/libraries/kakaostory/kakaostory.iml" filepath="$PROJECT_DIR$/.idea/modules/libraries/kakaostory/kakaostory.iml" group="My Application/libraries/kakaostory" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/libraries/kakaotalk/kakaotalk.iml" filepath="$PROJECT_DIR$/.idea/modules/libraries/kakaotalk/kakaotalk.iml" group="My Application/libraries/kakaotalk" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/libraries/libraries.iml" filepath="$PROJECT_DIR$/.idea/modules/libraries/libraries.iml" group="My Application/libraries" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/libraries/message-template/message-template.iml" filepath="$PROJECT_DIR$/.idea/modules/libraries/message-template/message-template.iml" group="My Application/libraries/message-template" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/libraries/network/network.iml" filepath="$PROJECT_DIR$/.idea/modules/libraries/network/network.iml" group="My Application/libraries/network" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/libraries/plusfriend/plusfriend.iml" filepath="$PROJECT_DIR$/.idea/modules/libraries/plusfriend/plusfriend.iml" group="My Application/libraries/plusfriend" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/libraries/push/push.iml" filepath="$PROJECT_DIR$/.idea/modules/libraries/push/push.iml" group="My Application/libraries/push" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/libraries/test-common/test-common.iml" filepath="$PROJECT_DIR$/.idea/modules/libraries/test-common/test-common.iml" group="My Application/libraries/test-common" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/libraries/usermgmt/usermgmt.iml" filepath="$PROJECT_DIR$/.idea/modules/libraries/usermgmt/usermgmt.iml" group="My Application/libraries/usermgmt" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/libraries/util/util.iml" filepath="$PROJECT_DIR$/.idea/modules/libraries/util/util.iml" group="My Application/libraries/util" />
+    </modules>
+  </component>
+</project>
