@@ -6,8 +6,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.example.myapplication.Thread.ThreadTask;
 import com.google.android.material.appbar.MaterialToolbar;
@@ -28,6 +30,7 @@ import java.net.URL;
 public class User_inform extends AppCompatActivity {
 
     private MaterialTextView EmailView;
+    private MaterialTextView NameView;
     private MaterialTextView PhoneNumView;
     private MaterialTextView AddressView;
     private MaterialButton goBack_Button;
@@ -40,6 +43,7 @@ public class User_inform extends AppCompatActivity {
     private String Phonenumber;
     private String Address;
     private String ip;
+    private String Name;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,16 +64,24 @@ public class User_inform extends AppCompatActivity {
         Email = login_information_pref.getString("email", Email);
 
         EmailView = findViewById(R.id.Email);
+        NameView = findViewById(R.id.profile_name);
         PhoneNumView = findViewById(R.id.Phonenumber);
         AddressView = findViewById(R.id.Address);
         goBack_Button = findViewById(R.id.goBack_Button);
 
-        ThreadTask<Object> getThreadTask_userInform = getThreadTask_userInform(Email, "/user_inform");
+        ThreadTask<Object> getThreadTask_userInform = getThreadTask_userInform(Email, "/account_information_check");
         getThreadTask_userInform.execute(ip);
 
-        EmailView.setText(Email);
-        PhoneNumView.setText(Phonenumber);
-        AddressView.setText(Address);
+        if(getThreadTask_userInform.getResult() == 1) {// 이메일 에러
+
+        }
+        else if(getThreadTask_userInform.getResult() == 2){
+            NameView.setText(Name);
+            EmailView.setText(Email);
+            PhoneNumView.setText(Phonenumber);
+            AddressView.setText(Address);
+        }
+
 
         goBack_Button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -108,7 +120,7 @@ public class User_inform extends AppCompatActivity {
 
                 con = (HttpURLConnection) url.openConnection();
 
-                sendObject.put("wifi_mac_address", Mac);
+                sendObject.put("email_address", Email);
 
                 con.setRequestMethod("POST");//POST방식으로 보냄
                 con.setRequestProperty("Cache-Control", "no-cache");//캐시 설정
@@ -137,10 +149,14 @@ public class User_inform extends AppCompatActivity {
                     JSONObject responseJSON = new JSONObject(response);
 
                     this.response_result = (Integer) responseJSON.get("key");
-                    this.error_code = (String) responseJSON.get("err_code");
+                    //this.error_code = (String) responseJSON.get("err_code");
 
-                    Phonenumber = (String) responseJSON.get("email");
-                    Address = (String) responseJSON.get("address");
+                    JSONObject test = (JSONObject) responseJSON.get("information");
+                    Name = (String) test.get("inst_name");
+                    Phonenumber = (String) test.get("phone_number");
+                    Address = (String) test.get("inst_address");
+
+                    Log.e("twtwtww", String.format("번호 : %s, 주소 :", Phonenumber));
                 }
             }
 

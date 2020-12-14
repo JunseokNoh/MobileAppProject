@@ -46,7 +46,9 @@ import java.net.URL;
 import java.util.ArrayList;
 
 public class NearHospital extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
-
+    /**
+     * 지울거
+     * */
     private MaterialToolbar toolbar;
     private ActionBar actionBar;
     private MaterialTextView toolbartext;

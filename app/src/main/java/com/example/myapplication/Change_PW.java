@@ -4,6 +4,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -69,6 +70,7 @@ public class Change_PW extends AppCompatActivity {
         ChangedPWView = findViewById(R.id.changed_pw);
         ChangedPW2View = findViewById(R.id.changed2_pw);
 
+
         ConfirmButton = findViewById(R.id.pw_check);
         ConfirmButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -81,18 +83,26 @@ public class Change_PW extends AppCompatActivity {
                     Toast.makeText(getApplication(), "비밀번호가 일치하지 않습니다.", Toast.LENGTH_SHORT).show();
                 }
                 if(changedPw.equals(changedPw2)){
-                    ThreadTask<Object> change_pw_result = getThreadTask(Email,currentPw,changedPw, "/ChangePW");
+                    ThreadTask<Object> change_pw_result = getThreadTask(Email,currentPw,changedPw, "/password_modification");
                     change_pw_result.execute(ip);
 
                     if(change_pw_result.getResult() == 0){
                        /**
-                        * 비밀번호 변경실패
+                        * 비밀번호 변경실패(시스템에러)
                         * *
                         * */
                         Toast.makeText(getApplication(), "비밀번호 변경에 실패했습니다.", Toast.LENGTH_SHORT).show();
                     }
-                    else{
+                    else if(change_pw_result.getResult() == 1){
                         Toast.makeText(getApplication(), "비밀번호 변경 성공!", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(Change_PW.this, MainActivity.class);
+                        startActivity(intent);
+                    }
+                    else if(change_pw_result.getResult() == 2){
+                        Toast.makeText(getApplication(), "기존 비밀번호와 동일합니다.", Toast.LENGTH_SHORT).show();
+                    }
+                    else if(change_pw_result.getResult() == 3){
+                        Toast.makeText(getApplication(), "기존 비밀번호와 동일합니다.", Toast.LENGTH_SHORT).show();
                     }
                 }
             }

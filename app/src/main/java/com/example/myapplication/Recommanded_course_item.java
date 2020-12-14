@@ -5,12 +5,22 @@ import java.util.ArrayList;
 public class Recommanded_course_item {
     private String Course_name;
     private String Course_id;
-    private ArrayList<course_item> Course_list = new ArrayList<course_item>();
+    private String Preference;
+    private ArrayList<course_item> Course_list = new ArrayList<>();
 
-    public Recommanded_course_item(String course_name, String course_id, ArrayList<course_item> course_list){
+    public Recommanded_course_item(String course_name, String course_id, String preference, ArrayList<course_item> course_list){
         Course_name = course_name;
         Course_id = course_id;
+        Preference = preference;
         Course_list = course_list;
+    }
+
+    public void setPreference(String preference) {
+        Preference = preference;
+    }
+
+    public String getPreference() {
+        return Preference;
     }
 
     public void add_item(course_item item){

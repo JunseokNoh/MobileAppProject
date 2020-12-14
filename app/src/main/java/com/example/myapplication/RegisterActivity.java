@@ -170,7 +170,7 @@ public class RegisterActivity extends AppCompatActivity {
                 //security_Code를 서버로 전송하고
                 result.execute(ip);
 
-                if(result.getResult() == 1){ //Security_code_check true or false
+                if(result.getResult() == 1 ){ //Security_code_check true or false
                     //임시 비밀번호 일치 추가 진행 가능
                     //true이면 EmailSecurityInformText.setText(인증되었씁니다)로 바꿔주기
                     Security_code_check = true;
@@ -186,6 +186,7 @@ public class RegisterActivity extends AppCompatActivity {
                 }
                 else if(result.getResult() == 0){
                     //시스템 에러
+                    Toast.makeText(getApplication(), "시스템 에러", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -258,6 +259,7 @@ public class RegisterActivity extends AppCompatActivity {
                 outStream.write(sendObject.toString().getBytes());
                 outStream.flush();
 
+                Log.e("중복확인 테스트", String.format(" : %d ", con.getResponseCode()));
                 int responseCode = con.getResponseCode();
                 if (responseCode == HttpURLConnection.HTTP_OK) {
 

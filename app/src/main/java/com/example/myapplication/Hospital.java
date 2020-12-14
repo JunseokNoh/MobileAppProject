@@ -1,7 +1,9 @@
 package com.example.myapplication;
 
 public class Hospital {
-
+    /**
+     * 지울거
+     * */
     private String Hospital_name;
     private String Hospital_location;
     private String Hospital_phone_num;

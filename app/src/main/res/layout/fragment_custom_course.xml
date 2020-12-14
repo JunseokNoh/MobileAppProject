@@ -70,7 +70,7 @@
                         <androidx.recyclerview.widget.RecyclerView
                             android:id="@+id/custom_course_Recycler_view"
                             android:layout_width="match_parent"
-                            android:layout_height="304dp" />
+                            android:layout_height="230dp" />
                     </LinearLayout>
 
                     <LinearLayout

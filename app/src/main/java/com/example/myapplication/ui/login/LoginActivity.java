@@ -265,13 +265,16 @@ public class LoginActivity extends AppCompatActivity  {
 //                                }
                             }
                             else if(result.getResult() == 4) { // 로그인 성공!
-                                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                //Intent intent = new Intent(LoginActivity.this, MainActivity.class);
 
                                 login_information_pref = getSharedPreferences("login_information", Activity.MODE_PRIVATE);
                                 login_infromation_editor = login_information_pref.edit();
                                 login_infromation_editor.putString("login_type" , "naver");
                                 login_infromation_editor.putString("email" , Email);
                                 login_infromation_editor.commit();
+//                                startActivity(intent);
+//                                finish();
+                                Intent intent = new Intent(LoginActivity.this, Tutorial.class);
                                 startActivity(intent);
                                 finish();
                             }

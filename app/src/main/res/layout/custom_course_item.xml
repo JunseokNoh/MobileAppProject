@@ -14,7 +14,7 @@
 
         <com.google.android.material.textview.MaterialTextView
             android:layout_width="30dp"
-            android:layout_height="80dp"/>
+            android:layout_height="70dp"/>
 
         <LinearLayout
             android:layout_width="320dp"
@@ -24,7 +24,7 @@
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/custom_courses_name"
                 android:layout_width="match_parent"
-                android:layout_height="29dp"
+                android:layout_height="25dp"
                 android:layout_marginTop="10dp"
                 android:gravity="center_vertical"
                 android:text="목적지를 설정해주세요."
@@ -35,7 +35,7 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="30dp"
+                android:layout_height="25dp"
                 android:orientation="horizontal">
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/custom_courses_detail"

@@ -82,7 +82,7 @@ public class choice_course_fragment extends Fragment {
 //                Intent intent = new Intent(v.getContext(), Categories_coures.class);
 //                intent.getStringExtra("restaurant");
 //                startActivity(intent);
-                ((MainActivity)getActivity()).replaceFragment(Categories_coures_fragment.newInstance(mParam1, ""));
+                ((MainActivity)getActivity()).replaceFragment(Categories_coures_fragment.newInstance(mParam1, "식당"));
             }
         });
 
@@ -92,7 +92,7 @@ public class choice_course_fragment extends Fragment {
 //                Intent intent = new Intent(v.getContext(), Categories_coures.class);
 //                intent.getStringExtra("coffee");
 //                startActivity(intent);
-                ((MainActivity)getActivity()).replaceFragment(Categories_coures_fragment.newInstance(mParam1, ""));
+                ((MainActivity)getActivity()).replaceFragment(Categories_coures_fragment.newInstance(mParam1, "카페"));
             }
         });
 
@@ -102,7 +102,7 @@ public class choice_course_fragment extends Fragment {
 //                Intent intent = new Intent(v.getContext(), Categories_coures.class);
 //                intent.getStringExtra("play");
 //                startActivity(intent);
-                ((MainActivity)getActivity()).replaceFragment(Categories_coures_fragment.newInstance(mParam1, ""));
+                ((MainActivity)getActivity()).replaceFragment(Categories_coures_fragment.newInstance(mParam1, "놀거리"));
             }
         });
 
@@ -112,7 +112,7 @@ public class choice_course_fragment extends Fragment {
 //                Intent intent = new Intent(v.getContext(), Categories_coures.class);
 //                intent.getStringExtra("lookThings");
 //                startActivity(intent);
-                ((MainActivity)getActivity()).replaceFragment(Categories_coures_fragment.newInstance(mParam1, ""));
+                ((MainActivity)getActivity()).replaceFragment(Categories_coures_fragment.newInstance(mParam1, "볼거리"));
             }
         });
         return v;

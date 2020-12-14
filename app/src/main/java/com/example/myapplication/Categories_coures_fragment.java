@@ -1,5 +1,6 @@
 package com.example.myapplication;
 
+import android.app.Activity;
 import android.content.SharedPreferences;
 import android.location.Address;
 import android.os.Bundle;
@@ -19,6 +20,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.myapplication.Thread.ThreadTask;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -33,8 +35,16 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -87,6 +97,9 @@ public class Categories_coures_fragment extends Fragment  implements OnMapReadyC
 
     private MapView mapView;
     private List<Address> list = null;
+
+    private SharedPreferences location_information_pref;
+
     public Categories_coures_fragment() {
         // Required empty public constructor
     }
@@ -125,20 +138,14 @@ public class Categories_coures_fragment extends Fragment  implements OnMapReadyC
         View v =  inflater.inflate(R.layout.fragment_categories_coures_fragment, container, false);
         ip = getString(R.string.server_ip);
 
-//        Utils.setStatusBarColor(getActivity(), Utils.StatusBarcolorType.BLACK_STATUS_BAR);
-//
-//        toolbar = (MaterialToolbar)findViewById(R.id.MainActiviy_toolbar);
-//        setSupportActionBar(toolbar);
-//        actionBar = getSupportActionBar();
-//        actionBar.setDisplayShowCustomEnabled(true);
-//        actionBar.setDisplayShowTitleEnabled(false);
-//        actionBar.setDisplayHomeAsUpEnabled(true);
-//        toolbartext = (MaterialTextView)findViewById(R.id.toolbar_textview);
+        location_information_pref = getContext().getSharedPreferences("location_information", Activity.MODE_PRIVATE);
 
-//        login_information_pref = getSharedPreferences("login_information", Context.MODE_PRIVATE);
-//        Email = login_information_pref.getString("email", Email);
-//        //String Address = login_information_pref.getString("address", "주소를 선택해주세요.");
-//        toolbartext.setText("원하는 장소를 선택해주세요");
+        //location_infromation_editor = location_information_pref.edit();
+
+        // Address addr = list.get(0);
+        Starting_latitude = location_information_pref.getString("current_latitude", "");
+        Starting_longitude = location_information_pref.getString("current_longitude", "");
+
         Recommanded_recycler_view = v.findViewById(R.id.recommended_courses_Recycler_view);
         layoutManager =  new LinearLayoutManager(getContext());
         if(layoutManager != null){
@@ -147,17 +154,30 @@ public class Categories_coures_fragment extends Fragment  implements OnMapReadyC
         else{
             Log.e("SensorFragment", "Error");
         }
-
-//        ThreadTask<Object> result = getThreadTask(Email, "/id_duplication_check");
-//        result.execute(ip);
+        String kind = "";
+        if(mParam2.equals("식당")){
+            kind = "음식";
+        }
+        else if(mParam2.equals("카페")){
+            kind = "커피숍";
+        }
+        else if(mParam2.equals("놀거리")){
+            kind = "놀거리";
+        }
+        else if(mParam2.equals("볼거리")){
+            kind = "볼거리" ;
+        }
+        ThreadTask<Object> result = getThreadTask_getMAPInform(kind,Starting_latitude, Starting_longitude, "/map_category_information");
+        result.execute(ip);
 
 //        String input ="{"+
 //                "data_array:" + "[{\"Course_Name\" : \"추천코스1\", \"Course_id\" : \"0\", \"Course\" : [{\"Place_name\" : \"place1\", \"latitude\" : \"35.88565632201131\", \"longitude\" : \"128.6119264468393\"},{\"Place_name\" : \"place2\", \"latitude\" : \"35.88492137332584\", \"longitude\" : \"128.60971990159663\"},{\"Place_name\" : \"place3\", \"latitude\" : \"35.88253371936135\", \"longitude\" : \"128.60998957938452\"}]},{\"Course_Name\" : \"추천코스2\", \"Course_id\" : \"1\", \"Course\" : [{\"Place_name\" : \"place4\", \"latitude\" : \"35.884365190327685\", \"longitude\" : \"128.60770459025358\"},{\"Place_name\" : \"place5\", \"latitude\" : \"35.88213627620797\", \"longitude\" : \"128.60587875777216\"},{\"Place_name\" : \"place6\", \"latitude\" : \"35.884528069549695\", \"longitude\" : \"128.6060717434991\"} ]}]"
 //                +"}";
 
         String input ="{"+
-                "Course:"  +"[{\"Place_name\" : \"place1\",\"Place_detail\" : \"place detail1\", \"latitude\" : \"35.88565632201131\", \"longitude\" : \"128.6119264468393\"},{\"Place_name\" : \"place2\",\"Place_detail\" : \"place detail2\", \"latitude\" : \"35.88492137332584\", \"longitude\" : \"128.60971990159663\"},{\"Place_name\" : \"place3\",\"Place_detail\" : \"place detail3\", \"latitude\" : \"35.88253371936135\", \"longitude\" : \"128.60998957938452\"}]"
+                "Course:"  +"[{\"Place_name\" : \"맥시멈짐\",\"Place_detail\" : \"place detail1\", \"latitude\" : \"35.88214144011649\", \"longitude\" : \"128.60999144632964\"},{\"Place_name\" : \"place2\",\"Place_detail\" : \"place detail2\", \"latitude\" : \"35.88492137332584\", \"longitude\" : \"128.60971990159663\"},{\"Place_name\" : \"place3\",\"Place_detail\" : \"place detail3\", \"latitude\" : \"35.88253371936135\", \"longitude\" : \"128.60998957938452\"}]"
                 +"}";
+
 
         JSONObject input_object = null;
         try {
@@ -166,45 +186,19 @@ public class Categories_coures_fragment extends Fragment  implements OnMapReadyC
             e.printStackTrace();
         }
 
-        //Intent intent = getIntent();
-        try {
-//            start_latitude = Double.parseDouble(input_object.getString("latitude"));
-//            start_longitude = Double.parseDouble(input_object.getString("longitude"));
-//            Log.e("NearHospital", Double.toString(start_latitude));
-//            Log.e("NearHospital", Double.toString(start_longitude));
-            data_array = input_object.getString("Course");
-            Course_total_array = null;
-            Course_total_array = new JSONArray(data_array);
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
         try {
             for(int j = 0 ; j < Course_total_array.length() ; j ++){
                 JSONObject temp_object = Course_total_array.getJSONObject(j);
-                String Place_name = temp_object.getString("Place_name");
-                String Place_detail = temp_object.getString("Place_detail");
-                String Latitude = temp_object.getString("latitude");
-                String Longitude = temp_object.getString("longitude");
+                String Place_name = temp_object.getString("Name");
+                String Place_detail = temp_object.getString("Address");
+                String Latitude = temp_object.getString("Latitude");
+                String Longitude = temp_object.getString("Longitude");
 
-//                final Geocoder geocoder = new Geocoder(getContext());
-//                try {
-//                    list = geocoder.getFromLocation(Double.parseDouble(Latitude),Double.parseDouble(Longitude), 10);
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//
-//                Address addr = list.get(0);
-//                String Place_detail = addr.getAddressLine(0);
                 if(j == 0){
                     Starting_latitude = Latitude;
                     Starting_longitude = Longitude;
                 }
 
-//                GpsToAddress gps = new GpsToAddress(Double.parseDouble(Latitude), Double.parseDouble(Longitude));
-//                String Place_detail = gps.getAddress();
-//                //String Place_detail = " ";
                 course_list.add(new course_item(Place_name, Place_detail, Latitude, Longitude));
 
             }
@@ -234,8 +228,8 @@ public class Categories_coures_fragment extends Fragment  implements OnMapReadyC
                     args.putString("longitude", items.getLongitude());
                     args.putString("index", mParam1);
 
-
                     ((MainActivity)getActivity()).onMoveCustomcourse(args);
+                    Toast.makeText(getContext(), "선택되었습니다.", Toast.LENGTH_SHORT).show();
                 }
                 else{
                     Toast.makeText(getContext(), "목적지를 선택해주세요.", Toast.LENGTH_SHORT).show();
@@ -431,4 +425,84 @@ public class Categories_coures_fragment extends Fragment  implements OnMapReadyC
         }, 200);
         return false;
     }
+
+    private ThreadTask<Object> getThreadTask_getMAPInform(String kind, String starting_latitude, String starting_longitude, String Router_name){
+
+        return new ThreadTask<Object>() {
+            private int response_result;
+            private String error_code;
+            @Override
+            protected void onPreExecute() {// excute 전에
+
+            }
+
+            @Override
+            protected void doInBackground(String... urls) throws IOException, JSONException {//background로 돌아갈것
+                HttpURLConnection con = null;
+                JSONObject sendObject = new JSONObject();
+                BufferedReader reader = null;
+                URL url = new URL(urls[0] + Router_name);
+
+                con = (HttpURLConnection) url.openConnection();
+
+                sendObject.put("kind", kind);
+                sendObject.put("latitude", starting_latitude);
+                sendObject.put("longitude", starting_longitude);
+
+                con.setRequestMethod("POST");//POST방식으로 보냄
+                con.setRequestProperty("Cache-Control", "no-cache");//캐시 설정
+                con.setRequestProperty("Content-Type", "application/json");//application JSON 형식으로 전송
+                con.setRequestProperty("Accept", "application/json");//서버에 response 데이터를 html로 받음
+                con.setDoOutput(true);//Outstream으로 post 데이터를 넘겨주겠다는 의미
+                con.setDoInput(true);//Inputstream으로 서버로부터 응답을 받겠다는 의미
+
+                OutputStream outStream = con.getOutputStream();
+                outStream.write(sendObject.toString().getBytes());
+                outStream.flush();
+
+                int responseCode = con.getResponseCode();
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+
+                    InputStream stream = con.getInputStream();
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    byte[] byteBuffer = new byte[1024];
+                    byte[] byteData = null;
+                    int nLength = 0;
+                    while ((nLength = stream.read(byteBuffer, 0, byteBuffer.length)) != -1) {
+                        baos.write(byteBuffer, 0, nLength);
+                    }
+                    byteData = baos.toByteArray();
+                    String response = new String(byteData);
+                    JSONObject responseJSON = new JSONObject(response);
+
+    //                this.response_result = (Integer) responseJSON.get("key");
+                    //this.error_code = (String) responseJSON.get("err_code");
+
+                   // JSONObject test = (JSONObject) responseJSON.get("data");
+                    Course_total_array = (JSONArray) responseJSON.get("data");
+//                    Name = (String) test.get("inst_name");
+//                    Phonenumber = (String) test.get("phone_number");
+//                    Address = (String) test.get("inst_address");
+
+                   // Log.e("twtwtwsdfw", String.format("번호 : %s, 주소 :", test));
+                }
+            }
+
+            @Override
+            protected void onPostExecute() {
+
+            }
+
+            @Override
+            public int getResult() {
+                return response_result;
+            }
+
+            @Override
+            public String getErrorCode() {
+                return error_code;
+            }
+        };
+    }
+
 }

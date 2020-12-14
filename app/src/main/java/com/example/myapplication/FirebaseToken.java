@@ -30,7 +30,7 @@ public class FirebaseToken extends FirebaseMessagingService {
     private SharedPreferences sensor_status_pref;
     private SharedPreferences.Editor sensor_status_editor;
 
-//    private static NotificationManagerCompat notificationManager;
+//    private static Notification2ManagerCompat notificationManager;
 //    private static NotificationChannel channel;
 //
     /* 토큰이 새로 만들어질때나 refresh 될때  */

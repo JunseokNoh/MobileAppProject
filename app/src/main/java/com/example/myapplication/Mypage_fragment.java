@@ -60,6 +60,9 @@ public class Mypage_fragment extends Fragment {
     private String ip;
 
     private String Email;
+    private String Name;
+    private String Address;
+
     private String login_type;
     private String first_kakao_login;
     private String first_naver_login;
@@ -76,7 +79,7 @@ public class Mypage_fragment extends Fragment {
     static OAuthLogin mOAuthLoginModule;
 
     private MaterialTextView EmailView;
-
+    private MaterialTextView NameView;
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -132,12 +135,18 @@ public class Mypage_fragment extends Fragment {
         login_information_pref = getActivity().getSharedPreferences("login_information", Context.MODE_PRIVATE);
         login_infromation_editor = login_information_pref.edit();
 
-
         login_type = login_information_pref.getString("login_type", "null");
         Email = login_information_pref.getString("email", Email);
+        Address = login_information_pref.getString("address", "주소를 선택해주세요.");
 
         EmailView = v.findViewById(R.id.Email);
         EmailView.setText(Email);
+
+        ThreadTask<Object> getThreadTask_userInform = getThreadTask_userInform(Email, "/account_information_check");
+        getThreadTask_userInform.execute(ip);
+
+        NameView = v.findViewById(R.id.Name);
+        NameView.setText(Name);
         //SNS 로그인시에 첫 로그인인지 아닌지 확인하기 위한 preference
         login_log_pref = getActivity().getSharedPreferences("SNS_login_log", Context.MODE_PRIVATE);
         login_log_editor = login_log_pref.edit();
@@ -160,10 +169,17 @@ public class Mypage_fragment extends Fragment {
         ChangPw.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), Change_PW.class);
-                startActivity(intent);
+                if(!login_type.equals("general")){
+                    Toast.makeText(getContext(), "소셜 계정은 비빌번호를 변경할 수 없습니다.", Toast.LENGTH_SHORT).show();
+                }
+                else if(login_type.equals("general")){
+                    Intent intent = new Intent(getActivity(), Change_PW.class);
+                    startActivity(intent);
+                }
+
             }
         });
+
         logoutView = (MaterialTextView)v.findViewById(R.id.logout_button);
         logoutView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -189,7 +205,7 @@ public class Mypage_fragment extends Fragment {
                                     @Override
                                     public void onCompleteLogout() {
                                         login_infromation_editor.clear();
-                                        //editor.putString("first_login", "false");
+                                        login_infromation_editor.putString("address", Address);
                                         login_infromation_editor.commit();
 
                                         Intent intent = new Intent(getActivity(), LoginActivity.class);
@@ -208,6 +224,7 @@ public class Mypage_fragment extends Fragment {
                             mOAuthLogin.logout(getActivity());
 
                             login_infromation_editor.clear();
+                            login_infromation_editor.putString("address", Address);
                             login_infromation_editor.commit();
 
                             Intent intent = new Intent(getActivity(), LoginActivity.class);
@@ -221,6 +238,7 @@ public class Mypage_fragment extends Fragment {
                     }
                     else if (login_type.equals("general")){
                         login_infromation_editor.clear();
+                        login_infromation_editor.putString("address", Address);
                         login_infromation_editor.commit();
 
                         Intent intent = new Intent(getActivity(), LoginActivity.class);
@@ -439,6 +457,81 @@ public class Mypage_fragment extends Fragment {
 
                     } });
         AlertDialog msgDlg = msgBuilder.create(); msgDlg.show();
+    }
+
+    private ThreadTask<Object> getThreadTask_userInform(String Mac, String Router_name){
+
+        return new ThreadTask<Object>() {
+            private int response_result;
+            private String error_code;
+            @Override
+            protected void onPreExecute() {// excute 전에
+
+            }
+
+            @Override
+            protected void doInBackground(String... urls) throws IOException, JSONException {//background로 돌아갈것
+                HttpURLConnection con = null;
+                JSONObject sendObject = new JSONObject();
+                BufferedReader reader = null;
+                URL url = new URL(urls[0] + Router_name);
+
+                con = (HttpURLConnection) url.openConnection();
+
+                sendObject.put("email_address", Email);
+
+                con.setRequestMethod("POST");//POST방식으로 보냄
+                con.setRequestProperty("Cache-Control", "no-cache");//캐시 설정
+                con.setRequestProperty("Content-Type", "application/json");//application JSON 형식으로 전송
+                con.setRequestProperty("Accept", "application/json");//서버에 response 데이터를 html로 받음
+                con.setDoOutput(true);//Outstream으로 post 데이터를 넘겨주겠다는 의미
+                con.setDoInput(true);//Inputstream으로 서버로부터 응답을 받겠다는 의미
+
+                OutputStream outStream = con.getOutputStream();
+                outStream.write(sendObject.toString().getBytes());
+                outStream.flush();
+
+                int responseCode = con.getResponseCode();
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+
+                    InputStream stream = con.getInputStream();
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    byte[] byteBuffer = new byte[1024];
+                    byte[] byteData = null;
+                    int nLength = 0;
+                    while ((nLength = stream.read(byteBuffer, 0, byteBuffer.length)) != -1) {
+                        baos.write(byteBuffer, 0, nLength);
+                    }
+                    byteData = baos.toByteArray();
+                    String response = new String(byteData);
+                    JSONObject responseJSON = new JSONObject(response);
+
+                    this.response_result = (Integer) responseJSON.get("key");
+                    //this.error_code = (String) responseJSON.get("err_code");
+
+                    JSONObject test = (JSONObject) responseJSON.get("information");
+                    Name = (String) test.get("inst_name");
+                    Address = (String) test.get("inst_address");
+
+                    //Log.e("twtwtww", String.format("번호 : %s, 주소 :", Phonenumber));
+                }
+            }
+
+            @Override
+            protected void onPostExecute() {
+
+            }
+
+            @Override
+            public int getResult() {
+                return response_result;
+            }
+
+            @Override
+            public String getErrorCode() {
+                return error_code;
+            }
+        };
     }
 
     @Override

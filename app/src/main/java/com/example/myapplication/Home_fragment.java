@@ -18,9 +18,21 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.dinuscxj.progressbar.CircleProgressBar;
+import com.example.myapplication.Thread.ThreadTask;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textview.MaterialTextView;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -47,19 +59,23 @@ public class Home_fragment extends Fragment {
 
     private MaterialButton Recommended_button;
 
+    private String Starting_latitude;
+    private String Starting_longitude;
+    private SharedPreferences login_information_pref;
+    private SharedPreferences location_information_pref;
+
+    private JSONArray Course_total_array;
+    private ArrayList<Recommanded_course_item> RecommandedCourseDataList;
+    private ArrayList<course_item> course_list = new ArrayList<course_item>();
+
     public Home_fragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment Home_fragment.
+    /***
+     * 추천코스 받아오기
      */
-    // TODO: Rename and change types and number of parameters
+
     public static Home_fragment newInstance(String param1, String param2) {
         Home_fragment fragment = new Home_fragment();
         Bundle args = new Bundle();
@@ -84,8 +100,8 @@ public class Home_fragment extends Fragment {
         String ip = getString(R.string.server_ip);
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_home_fragment, container, false);
-
-        ((MainActivity)getActivity()).setToolbar();
+        RecommandedCourseDataList = new ArrayList<>();
+        ((MainActivity) getActivity()).setToolbar();
 //        View header = inflater.inflate(R.layout.activity_main, null, false);
 //        MaterialTextView toolbartext = (MaterialTextView) header.findViewById(R.id.toolbar_textview);
 //
@@ -101,27 +117,142 @@ public class Home_fragment extends Fragment {
                 startActivity(intent);
             }
         });
-        recyclerView = (RecyclerView)v.findViewById(R.id.Recycler_view);
+        recyclerView = (RecyclerView) v.findViewById(R.id.Recycler_view);
 
-        layoutManager =  new LinearLayoutManager(getActivity());
-        if(layoutManager != null){
+        layoutManager = new LinearLayoutManager(getContext());
+        if (layoutManager != null) {
             recyclerView.setLayoutManager(layoutManager);
-        }
-        else{
+        } else {
             Log.e("SensorFragment", "Error");
         }
 
-        ArrayList<Course_rank> courseRanksList = new ArrayList<Course_rank>();
-        courseRanksList.add(new Course_rank("수성구 데이트 코스"));
-        courseRanksList.add(new Course_rank("동성로 데이트 코스"));
-        courseRanksList.add(new Course_rank("앞산 데이트 코스"));
+        location_information_pref = getActivity().getSharedPreferences("location_information", Activity.MODE_PRIVATE);
+
+        Starting_latitude = location_information_pref.getString("current_latitude", "");
+        Starting_longitude = location_information_pref.getString("current_longitude", "");
+
+        ThreadTask<Object> result = getThreadTask_getMAPInform(Starting_latitude, Starting_longitude, "/get_Recommend_information_top5");
+        result.execute(ip);
+
+        int next_course_num = -1;
+        int current_course_num;
+
+        try {
+            for (int i = 0; i < Course_total_array.length(); i++) {
+                Log.e("Recommaned_course", "들어왓다.");
+                JSONObject temp_object = Course_total_array.getJSONObject(i);
+                System.out.println(temp_object);
+                String Course_name = temp_object.getString("Course_name");
+                String Name = temp_object.getString("Name");
+                String address = temp_object.getString("Address");
+                String Latitude = Double.toString(temp_object.getDouble("latitude"));
+                String Longitude = Double.toString(temp_object.getDouble("longitude"));
+                String Course_num = Integer.toString(temp_object.getInt("Course_num"));
+                String Preference = Integer.toString(temp_object.getInt("Preference"));
+
+                Log.e("Recommanded_course test", String.format("%s %s %s %s %s %s", Course_name, Course_num, Name, address, Latitude, Longitude));
+                current_course_num = Integer.parseInt(Course_num);
+
+                course_list.add(new course_item(Name, address, Latitude, Longitude));
+
+                if (i + 1 < Course_total_array.length()) {
+                    JSONObject temp_object2 = Course_total_array.getJSONObject(i + 1);
+                    next_course_num = temp_object2.getInt("Course_num");
+                    if (current_course_num != next_course_num) {
+                        for (int j = 0; j < course_list.size(); j++) {
+                            Log.e("Recommanded_course test222", String.format("%s %s %s %s", course_list.get(j).getPlace_name(), course_list.get(j).getAddress(), course_list.get(j).getLatitude(), course_list.get(j).getLongitude()));
+                        }
+                        RecommandedCourseDataList.add(new Recommanded_course_item(Course_name, Course_num, Preference, course_list));
+                        course_list = new ArrayList<>();
+                    }
+                } else if (i == Course_total_array.length() - 1) {
+                    for (int j = 0; j < course_list.size(); j++) {
+                        Log.e("Recommanded_course test222", String.format("%s %s %s %s", course_list.get(j).getPlace_name(), course_list.get(j).getAddress(), course_list.get(j).getLatitude(), course_list.get(j).getLongitude()));
+                    }
+                    RecommandedCourseDataList.add(new Recommanded_course_item(Course_name, Course_num, Preference, course_list));
+                    course_list = new ArrayList<>();
+                }
+            }
+
+        } catch (Exception e) {
+
+        }
 
         recycleAdaptors = new RecycleAdaptors_Curse_rank(ip);
-
-        recycleAdaptors.setItems(courseRanksList);
+        recycleAdaptors.setItems(RecommandedCourseDataList);
         recyclerView.setAdapter(recycleAdaptors);
-
         return v;
+    }
+
+    private ThreadTask<Object> getThreadTask_getMAPInform(String starting_latitude, String starting_longitude, String Router_name){
+
+        return new ThreadTask<Object>() {
+            private int response_result;
+            private String error_code;
+            @Override
+            protected void onPreExecute() {// excute 전에
+
+            }
+
+            @Override
+            protected void doInBackground(String... urls) throws IOException, JSONException {//background로 돌아갈것
+                HttpURLConnection con = null;
+                JSONObject sendObject = new JSONObject();
+                BufferedReader reader = null;
+                URL url = new URL(urls[0] + Router_name);
+
+                con = (HttpURLConnection) url.openConnection();
+
+//                sendObject.put("kind", kind);
+                sendObject.put("latitude", starting_latitude);
+                sendObject.put("longitude", starting_longitude);
+
+                con.setRequestMethod("POST");//POST방식으로 보냄
+                con.setRequestProperty("Cache-Control", "no-cache");//캐시 설정
+                con.setRequestProperty("Content-Type", "application/json");//application JSON 형식으로 전송
+                con.setRequestProperty("Accept", "application/json");//서버에 response 데이터를 html로 받음
+                con.setDoOutput(true);//Outstream으로 post 데이터를 넘겨주겠다는 의미
+                con.setDoInput(true);//Inputstream으로 서버로부터 응답을 받겠다는 의미
+
+                OutputStream outStream = con.getOutputStream();
+                outStream.write(sendObject.toString().getBytes());
+                outStream.flush();
+
+                int responseCode = con.getResponseCode();
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+
+                    InputStream stream = con.getInputStream();
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    byte[] byteBuffer = new byte[1024];
+                    byte[] byteData = null;
+                    int nLength = 0;
+                    while ((nLength = stream.read(byteBuffer, 0, byteBuffer.length)) != -1) {
+                        baos.write(byteBuffer, 0, nLength);
+                    }
+                    byteData = baos.toByteArray();
+                    String response = new String(byteData);
+                    JSONObject responseJSON = new JSONObject(response);
+                    Course_total_array = (JSONArray) responseJSON.get("data");
+
+                    Log.e("twtwtwsdfw", String.format("%s", Course_total_array));
+                }
+            }
+
+            @Override
+            protected void onPostExecute() {
+
+            }
+
+            @Override
+            public int getResult() {
+                return response_result;
+            }
+
+            @Override
+            public String getErrorCode() {
+                return error_code;
+            }
+        };
     }
 
 

@@ -215,7 +215,7 @@ public class CustomCourse extends Fragment implements OnMapReadyCallback, Google
                                 if(result_cour_number.getResult() == 1){ //코스넘버 받아오기 성공
 
                                     for(int j = 0 ; j <custom_course_items.size() ; j++){
-                                        ThreadTask<Object> result = getThreadTask_put_custom_Course(custom_course_items.get(i), Course_name, "/put_course_information");
+                                        ThreadTask<Object> result = getThreadTask_put_custom_Course(custom_course_items.get(j), Course_name, "/put_course_information");
                                         result.execute(ip);
                                         if(result.getResult() != 1) break;
                                     }

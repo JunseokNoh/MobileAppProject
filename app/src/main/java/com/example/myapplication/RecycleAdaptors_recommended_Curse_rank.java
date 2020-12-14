@@ -98,7 +98,7 @@ class RecycleAdaptors_recommended_Curse_rank extends RecyclerView.Adapter<Recycl
         ArrayList<course_item> course_list = item.getCourse_list();
 //        sensor_status_pref = parent.getContext().getSharedPreferences("Sensor_status", Activity.MODE_PRIVATE);
 //        sensor_status_editor = sensor_status_pref.edit();
-
+        Log.e("REcycleAdaptor test1","sdfsdfsdfsdfsdfsdfsdfsdf");
         holder.view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -116,17 +116,16 @@ class RecycleAdaptors_recommended_Curse_rank extends RecyclerView.Adapter<Recycl
 
                     Latitude = Double.parseDouble(course_list.get(i).getLatitude());
                     Longtitude = Double.parseDouble(course_list.get(i).getLongitude());
-
                     latngs.add(new LatLng(Latitude, Longtitude));
                     polylineOptions.add(new LatLng(Latitude,Longtitude));
                     LatLng Starting_Point = new LatLng(Latitude, Longtitude); // 스타팅 지점
-                    googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(Starting_Point, 14));
+                    googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(Starting_Point, 13));
 
                     tv_marker.setText(course_list.get(i).getPlace_name());
                     markerOptions.position(new LatLng(Latitude,Longtitude));
                     markerOptions.title(course_list.get(i).getPlace_name());
                     //markerOptions.icon(BitmapDescriptorFactory.fromBitmap(createDrawableFromView(parent.getContext(), marker_root_view)));
-                    markerOptions.snippet("주소 넣을 자리");
+                    markerOptions.snippet(course_list.get(i).getAddress());
                     // 생성된 마커 옵션을 지도에 표시
 
                     marker = googleMap.addMarker(markerOptions);
@@ -162,75 +161,6 @@ class RecycleAdaptors_recommended_Curse_rank extends RecyclerView.Adapter<Recycl
     private void setCustomMarkerView() {
         marker_root_view = LayoutInflater.from(parent.getContext()).inflate(R.layout.marker_hydrogenstation, null);
         tv_marker = (TextView) marker_root_view.findViewById(R.id.tv_marker);
-    }
-
-    private ThreadTask<Object> getThreadTask_deleteSensor(String MAC, String Router_name){
-
-        return new ThreadTask<Object>() {
-            private int response_result;
-            private String error_code;
-            @Override
-            protected void onPreExecute() {// excute 전에
-
-            }
-
-            @Override
-            protected void doInBackground(String... urls) throws IOException, JSONException {//background로 돌아갈것
-                HttpURLConnection con = null;
-                JSONObject sendObject = new JSONObject();
-                BufferedReader reader = null;
-                URL url = new URL(urls[0] + Router_name);
-
-                con = (HttpURLConnection) url.openConnection();
-
-                sendObject.put("wifi_mac_address", MAC);
-
-                con.setRequestMethod("POST");//POST방식으로 보냄
-                con.setRequestProperty("Cache-Control", "no-cache");//캐시 설정
-                con.setRequestProperty("Content-Type", "application/json");//application JSON 형식으로 전송
-                con.setRequestProperty("Accept", "application/json");//서버에 response 데이터를 html로 받음
-                con.setDoOutput(true);//Outstream으로 post 데이터를 넘겨주겠다는 의미
-                con.setDoInput(true);//Inputstream으로 서버로부터 응답을 받겠다는 의미
-
-                OutputStream outStream = con.getOutputStream();
-                outStream.write(sendObject.toString().getBytes());
-                outStream.flush();
-
-                int responseCode = con.getResponseCode();
-                if (responseCode == HttpURLConnection.HTTP_OK) {
-
-                    InputStream stream = con.getInputStream();
-                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                    byte[] byteBuffer = new byte[1024];
-                    byte[] byteData = null;
-                    int nLength = 0;
-                    while ((nLength = stream.read(byteBuffer, 0, byteBuffer.length)) != -1) {
-                        baos.write(byteBuffer, 0, nLength);
-                    }
-                    byteData = baos.toByteArray();
-                    String response = new String(byteData);
-                    JSONObject responseJSON = new JSONObject(response);
-
-                    this.response_result = (Integer) responseJSON.get("key");
-                    this.error_code = (String) responseJSON.get("err_code");
-                }
-            }
-
-            @Override
-            protected void onPostExecute() {
-
-            }
-
-            @Override
-            public int getResult() {
-                return response_result;
-            }
-
-            @Override
-            public String getErrorCode() {
-                return error_code;
-            }
-        };
     }
 
     @Override
@@ -280,7 +210,7 @@ class RecycleAdaptors_recommended_Curse_rank extends RecyclerView.Adapter<Recycl
             for(course_item course : item.getCourse_list()){
                 Course_detail_temp += course.getPlace_name() + " ";
             }
-            Course_detail.setText(Course_detail_temp);
+            Course_detail.setText("추천수 : " + item.getPreference());
         }
 
         private ThreadTask<Object> getThreadTask_macCheck(String MAC, String Router_name){

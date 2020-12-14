@@ -81,18 +81,8 @@ import java.util.ArrayList;
 public class MainActivity<pirvate> extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, FragmentCallback{
 
     private static final String CHANNEL_ID = "1000" ;
-
-    private String [] notepad_title = new String[100];
-    private String [] notepad_content = new String[100];
-    private String[] temp = new String[2];
-    private ConstraintLayout Parent_layout;
     private int i = 0;
-    private String title_line = null;
-    private String Content_line = null;
-    private RecyclerView recyclerView;
-    private RecyclerView.Adapter recycle_adapter;
-    private RecyclerView.LayoutManager layoutManager;
-    private RecycleAdaptors recycleAdaptors;
+
     private static final int SEARCH_ADDRESS_ACTIVITY = 10001;
 
     private Home_fragment home_fragment;
@@ -103,11 +93,6 @@ public class MainActivity<pirvate> extends AppCompatActivity implements Navigati
     private String ip;
     DrawerLayout drawer;
 
-    String Title_filename = "title.txt";
-    String Content_filename = "content.txt";
-    private ItemTouchHelper helper;
-    ArrayList<SampleData> notepadDataList = new ArrayList<>();
-
     private MaterialToolbar toolbar;
     private ActionBar actionBar;
     private MaterialTextView toolbartext;
@@ -116,15 +101,17 @@ public class MainActivity<pirvate> extends AppCompatActivity implements Navigati
     private String Email;
     private String Address;
 
-    Bundle mbundle;
+    private SharedPreferences location_information_pref;
+    private SharedPreferences.Editor location_infromation_editor;
 
-    private Class<LoginActivity> loginActivity;
+    Bundle mbundle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         //setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
 
         Utils.setStatusBarColor(this, Utils.StatusBarcolorType.BLACK_STATUS_BAR);
         home_fragment = new Home_fragment();
@@ -134,7 +121,10 @@ public class MainActivity<pirvate> extends AppCompatActivity implements Navigati
 
         login_information_pref = getSharedPreferences("login_information", Context.MODE_PRIVATE);
         Email = login_information_pref.getString("email", "");
-        Address = login_information_pref.getString("address", "주소를 선택해주세요.");
+
+        location_information_pref = getSharedPreferences("location_information", Activity.MODE_PRIVATE);
+        //location_infromation_editor = location_information_pref.edit();
+        Address = location_information_pref.getString("address", "주소를 선택해주세요.");
         if(Address.equals("주소를 선택해주세요.")){
             showDialog();
         }
@@ -164,8 +154,6 @@ public class MainActivity<pirvate> extends AppCompatActivity implements Navigati
             checkPermission();
         }
 
-        //actionBar.setDisplayHomeAsUpEnabled(true); 뒤로가기 버튼, 현재 흰색이라서 생성해도 보이지는 않음 필요는없
-
         getSupportFragmentManager().beginTransaction().replace(R.id.container , home_fragment).commit();
 
         BottomNavigationView bottomNavigation = findViewById(R.id.bottom_navigation);
@@ -173,26 +161,21 @@ public class MainActivity<pirvate> extends AppCompatActivity implements Navigati
                 new BottomNavigationView.OnNavigationItemSelectedListener() {
                     @Override
                     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                        Address = login_information_pref.getString("address", "주소를 선택해주세요.");
+                        Address = location_information_pref.getString("address", "주소를 선택해주세요.");
                         switch (item.getItemId()){
                             case R.id.tab1:
-                                //Toast.makeText(getApplicationContext(), "1", Toast.LENGTH_SHORT).show();
                                 getSupportFragmentManager().beginTransaction().replace(R.id.container, home_fragment).commit();
                                 toolbartext.setText(Address);
                                 return true;
                             case R.id.tab2 :
-                                //Toast.makeText(getApplicationContext(), "2", Toast.LENGTH_SHORT).show();
                                 getSupportFragmentManager().beginTransaction().replace(R.id.container, customCourse_fragment).commit();
                                 toolbartext.setText(Address);
                                 return true;
                             case R.id.tab3 :
-                                //Toast.makeText(getApplicationContext(), "3", Toast.LENGTH_SHORT).show();
                                 getSupportFragmentManager().beginTransaction().replace(R.id.container, mypage_fragment).commit();
                                 toolbartext.setText(Address);
                                 return true;
                             case R.id.tab4 :
-                                //Toast.makeText(getApplicationContext(), "3", Toast.LENGTH_SHORT).show();
-                                //getSupportFragmentManager().beginTransaction().replace(R.id.container, hospital_fragment).commit();
                                 Intent intent = new Intent(MainActivity.this, NearHospital.class);
                                 startActivity(intent);
                                 //toolbartext.setText("피보호자 근처의 병원입니다");
@@ -202,7 +185,6 @@ public class MainActivity<pirvate> extends AppCompatActivity implements Navigati
                     }
                 }
         );
-        Navinit(); // navigation drawer 초기화
 
         //getHashKey(); // fire base 해쉬 값 받아오기
 
@@ -291,33 +273,6 @@ public class MainActivity<pirvate> extends AppCompatActivity implements Navigati
         mbundle = args;
         getSupportFragmentManager().beginTransaction().replace(R.id.container, customCourse_fragment).commit();
     }
-//    private void getHeadup(String title, String body){
-//        Intent snoozeIntent = new Intent(this,RegisterActivity.class);
-//        snoozeIntent.setAction("ACTION_SNOOZE");
-//        snoozeIntent.putExtra("EXTRA_NOTIFICATION_ID", 0);
-//        PendingIntent snoozePendingIntent =
-//                PendingIntent.getBroadcast(this, 0, snoozeIntent, 0);
-//
-//        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
-//                .setSmallIcon(R.drawable.ic_menu_slideshow)
-//                .setContentTitle(title)
-//                .setContentText(body)
-//                .setStyle(new NotificationCompat.BigTextStyle()
-//                        .bigText(body))
-//                .setPriority(NotificationCompat.PRIORITY_MAX)
-//                .setDefaults(Notification.DEFAULT_VIBRATE)
-//                .setFullScreenIntent(snoozePendingIntent, false)
-//                .setContentIntent(snoozePendingIntent);
-//        //.setAutoCancel(true);
-//
-//
-//        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
-//
-//        // notificationId is a unique int for each notification that you must define
-//        int notificationId = 15;
-//        notificationManager.notify(notificationId, builder.build());
-//    }
-
     private int send_token_response(String request_email, String token){
 
         ThreadTask<Object> result = new ThreadTask<Object>() {
@@ -499,99 +454,11 @@ public class MainActivity<pirvate> extends AppCompatActivity implements Navigati
         result.execute(ip);
 
     }
-    public void wrtieToFile(){
 
-        File Title_file = new File(MainActivity.this.getFilesDir(), Title_filename);
-        File Content_file = new File(MainActivity.this.getFilesDir(), Content_filename);
-
-        StringBuilder stringBuffer = new StringBuilder();
-        BufferedReader Title_reader = null;
-        try {
-            Title_reader = new BufferedReader(new FileReader(Title_file));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        try (
-                BufferedReader Content_reader =
-                        new BufferedReader(new FileReader(Content_file))) {
-
-            while (true) {
-                assert Title_reader != null;
-                title_line = Title_reader.readLine();
-                if (title_line == null ) {
-                    break;
-                }
-
-                while (!(Content_line = Content_reader.readLine()).equals("=============") && Content_line != null) {
-                    stringBuffer.append(Content_line).append('\n');
-                    System.out.println("gdgdgd " + stringBuffer.toString());;
-                }
-
-                Content_line = stringBuffer.toString();
-                System.out.println("Content_line : " + Content_line);
-
-                notepad_title[i] = title_line;
-                notepad_content[i] = Content_line;
-                System.out.println("읽어온 내용" + i + " : " + notepad_title[i] + " " + notepad_content[i]);
-
-                notepadDataList.add(new SampleData(notepad_title[i] , notepad_content[i],i)) ;
-                recycleAdaptors.notifyDataSetChanged();
-                stringBuffer.delete(0, stringBuffer.length());
-                i++;
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-    private void getHashKey(){
-        PackageInfo packageInfo = null;
-        try {
-            packageInfo = getPackageManager().getPackageInfo(getPackageName(), PackageManager.GET_SIGNATURES);
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-        }
-        if (packageInfo == null)
-            Log.e("KeyHash", "KeyHash:null");
-
-        for (Signature signature : packageInfo.signatures) {
-            try {
-                MessageDigest md = MessageDigest.getInstance("SHA");
-                md.update(signature.toByteArray());
-                Log.d("KeyHash", Base64.encodeToString(md.digest(), Base64.DEFAULT));
-            } catch (NoSuchAlgorithmException e) {
-                Log.e("KeyHash", "Unable to get MessageDigest. signature=" + signature, e);
-            }
-        }
-    }
-
-    public void InitializeNotepadData() {
-        notepadDataList = new ArrayList<>();
-
-       // notepadDataList.add(new SampleData("노준석", 1));
-    }
-    public void Navinit(){
-//        toolbar = findViewById(R.id.toolbar);
-//        setSupportActionBar(toolbar);
-//
-//        drawer = findViewById(R.id.drawer_layout);
-//        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-//                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-//        drawer.addDrawerListener(toggle);
-//        toggle.syncState();
-//
-//        NavigationView navigationView = findViewById(R.id.nav_view);
-//        navigationView.setNavigationItemSelectedListener(this);
-    }
 
     private long time = 0;
     @Override
     public void onBackPressed() {
-//        if (drawer.isDrawerOpen(GravityCompat.START)) {
-//            drawer.closeDrawer(GravityCompat.START);
-//        } else {
-//            super.onBackPressed();
-//        }
         if(System.currentTimeMillis() - time >= 2000){
             time = System.currentTimeMillis();
             Toast.makeText(getApplicationContext(), "뒤로 버튼을 한번 더 누르면 종료합니다.", Toast.LENGTH_SHORT).show();
@@ -672,11 +539,6 @@ public class MainActivity<pirvate> extends AppCompatActivity implements Navigati
                     });
         }
 
-        /*
-            //getSupportFragmentManager().beginTransaction().replace(R.id.container, curFragment).commit();
-            만약에 메뉴 클릭시 fragment 넣을거면 이걸로함.
-         */
-
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent intent)
@@ -688,10 +550,10 @@ public class MainActivity<pirvate> extends AppCompatActivity implements Navigati
                     String data = intent.getExtras().getString("data");
                     if (data != null) {
                         toolbartext.setText(data);
-                        login_information_pref = getSharedPreferences("login_information", Context.MODE_PRIVATE);
-                        SharedPreferences.Editor login_log_editor = login_information_pref.edit();
-                        login_log_editor.putString("address", data);
-                        login_log_editor.commit();
+                        location_information_pref = getSharedPreferences("location_information", Activity.MODE_PRIVATE);
+                        location_infromation_editor = location_information_pref.edit();
+                        location_infromation_editor.putString("address", data);
+                        location_infromation_editor.commit();
                     }
                 }
                 break;
@@ -708,57 +570,22 @@ public class MainActivity<pirvate> extends AppCompatActivity implements Navigati
         return super.onOptionsItemSelected(item);
     }
 
-    private void createNotificationChannel() {
-        // Create the NotificationChannel, but only on API 26+ because
-        // the NotificationChannel class is new and not in the support library
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = getString(R.string.channel_name);
-            String description = getString(R.string.channel_description);
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
-            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
-            channel.setDescription(description);
-            // Register the channel with the system; you can't change the importance
-            // or other notification behaviors after this
-            NotificationManager notificationManager = getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(channel);
-        }
-    }
     @TargetApi(Build.VERSION_CODES.M)
 
     private void checkPermission() {
 
         String[] permissions = {
-                // Manifest는 android를 import
                 Manifest.permission.ACCESS_COARSE_LOCATION,
                 Manifest.permission.ACCESS_FINE_LOCATION,
-                //Manifest.permission.CALL_PHONE
         };
 
         int permissionCheck = PackageManager.PERMISSION_GRANTED;
         for (String permission : permissions) {
             permissionCheck = this.checkSelfPermission(permission);
             if (permissionCheck == PackageManager.PERMISSION_DENIED) {
-                //break;
             }
         }
-        //전화 승인
-//        if (permissionCheck == PackageManager.PERMISSION_DENIED) {
-//            this.requestPermissions(permissions, 1);
-//        }
-//        if(ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE )!= PackageManager.PERMISSION_GRANTED){
-//            if(ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CALL_PHONE)){
-//                /**
-//                 * 거절 했을 때
-//                 * */
-//            }
-//            else{
-//                /**
-//                 * 승인했을 때
-//                 * */
-//                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CALL_PHONE},
-//                        1000);
-//            }
-//        }
+
     }
 }
 
