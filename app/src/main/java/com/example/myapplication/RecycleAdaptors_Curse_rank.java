@@ -38,7 +38,7 @@ class RecycleAdaptors_Curse_rank extends RecyclerView.Adapter<RecycleAdaptors_Cu
 
     private int position;
     private ViewGroup parent;
-    ArrayList<Course_rank> courseRanksList = new ArrayList<>();
+    private ArrayList<Recommanded_course_item> RecommandedCourseDataList;
     private String ip;
 
     private SharedPreferences sensor_status_pref;
@@ -48,27 +48,28 @@ class RecycleAdaptors_Curse_rank extends RecyclerView.Adapter<RecycleAdaptors_Cu
         ip = sensor_ip;
     }
 
-    public void addItem(Course_rank item){
-        courseRanksList.add(item);
+    public void addItem(Recommanded_course_item item){
+        RecommandedCourseDataList.add(item);
     }
 
-    public void setItems(ArrayList<Course_rank> items){
-        courseRanksList = items;
+    public void setItems(ArrayList<Recommanded_course_item> items){
+        RecommandedCourseDataList = items;
     }
 
     public void removeItems(int position){
-        courseRanksList.remove(position);
+        RecommandedCourseDataList.remove(position);
     }
-    public Course_rank getItem(int position){
-        return courseRanksList.get(position);
+
+    public Recommanded_course_item getItem(int position){
+        return RecommandedCourseDataList.get(position);
     }
-    public ArrayList<Course_rank> getItems(){
-        return courseRanksList;
+    public ArrayList<Recommanded_course_item> getItems(){
+        return RecommandedCourseDataList;
     }
 
 
-    public void setItem(int position, Course_rank item){
-        courseRanksList.set(position, item);
+    public void setItem(int position, Recommanded_course_item item){
+        RecommandedCourseDataList.set(position, item);
     }
 
     @Override
@@ -82,90 +83,23 @@ class RecycleAdaptors_Curse_rank extends RecyclerView.Adapter<RecycleAdaptors_Cu
     @Override // 실제 추가될 때
     public void onBindViewHolder(@NonNull final RecycleAdaptors_Curse_rank.CustomViewHolder holder, final int position) {
 
-        Course_rank item = courseRanksList.get(position);
+        Recommanded_course_item item = RecommandedCourseDataList.get(position);
 
-//        sensor_status_pref = parent.getContext().getSharedPreferences("Sensor_status", Activity.MODE_PRIVATE);
-//        sensor_status_editor = sensor_status_pref.edit();
-
-
+//        holder.view.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Intent intent = new Intent(parent.getContext(), Recommanded_Course.class);
+//                //intent.putExtra("position", item.getCourse_id());
+//                holder.view.getContext().startActivity(intent);
+//            }
+//        });
         holder.setItem(item);
 
-       // String sensor_status = sensor_status_pref.getString("sensor"+position, "false");
-
-    }
-
-    private ThreadTask<Object> getThreadTask_deleteSensor(String MAC, String Router_name){
-
-        return new ThreadTask<Object>() {
-            private int response_result;
-            private String error_code;
-            @Override
-            protected void onPreExecute() {// excute 전에
-
-            }
-
-            @Override
-            protected void doInBackground(String... urls) throws IOException, JSONException {//background로 돌아갈것
-                HttpURLConnection con = null;
-                JSONObject sendObject = new JSONObject();
-                BufferedReader reader = null;
-                URL url = new URL(urls[0] + Router_name);
-
-                con = (HttpURLConnection) url.openConnection();
-
-                sendObject.put("wifi_mac_address", MAC);
-
-                con.setRequestMethod("POST");//POST방식으로 보냄
-                con.setRequestProperty("Cache-Control", "no-cache");//캐시 설정
-                con.setRequestProperty("Content-Type", "application/json");//application JSON 형식으로 전송
-                con.setRequestProperty("Accept", "application/json");//서버에 response 데이터를 html로 받음
-                con.setDoOutput(true);//Outstream으로 post 데이터를 넘겨주겠다는 의미
-                con.setDoInput(true);//Inputstream으로 서버로부터 응답을 받겠다는 의미
-
-                OutputStream outStream = con.getOutputStream();
-                outStream.write(sendObject.toString().getBytes());
-                outStream.flush();
-
-                int responseCode = con.getResponseCode();
-                if (responseCode == HttpURLConnection.HTTP_OK) {
-
-                    InputStream stream = con.getInputStream();
-                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                    byte[] byteBuffer = new byte[1024];
-                    byte[] byteData = null;
-                    int nLength = 0;
-                    while ((nLength = stream.read(byteBuffer, 0, byteBuffer.length)) != -1) {
-                        baos.write(byteBuffer, 0, nLength);
-                    }
-                    byteData = baos.toByteArray();
-                    String response = new String(byteData);
-                    JSONObject responseJSON = new JSONObject(response);
-
-                    this.response_result = (Integer) responseJSON.get("key");
-                    this.error_code = (String) responseJSON.get("err_code");
-                }
-            }
-
-            @Override
-            protected void onPostExecute() {
-
-            }
-
-            @Override
-            public int getResult() {
-                return response_result;
-            }
-
-            @Override
-            public String getErrorCode() {
-                return error_code;
-            }
-        };
     }
 
     @Override
     public int getItemCount() {
-        return courseRanksList.size();
+        return RecommandedCourseDataList.size();
     }
 
     @Override
@@ -191,87 +125,18 @@ class RecycleAdaptors_Curse_rank extends RecyclerView.Adapter<RecycleAdaptors_Cu
 
         protected LinearLayout view;
         protected TextView Course_name;
-
-        private SharedPreferences sensor_status_pref;
-        private SharedPreferences.Editor sensor_status_editor;
+        protected TextView Course_like;
 
         public CustomViewHolder(@NonNull View itemView, String sensor_ip) {
             super(itemView);
             ip = sensor_ip;
             Course_name  = (TextView)itemView.findViewById(R.id.Course_Rank_name);
+            Course_like = (TextView)itemView.findViewById(R.id.Course_Rank_like);
         }
 
-        public void setItem(Course_rank item){
+        public void setItem(Recommanded_course_item item){
             Course_name.setText(item.getCourse_name());
-        }
-
-        private ThreadTask<Object> getThreadTask_macCheck(String MAC, String Router_name){
-
-            return new ThreadTask<Object>() {
-                private int response_result;
-                private String error_code;
-                @Override
-                protected void onPreExecute() {// excute 전에
-
-                }
-
-                @Override
-                protected void doInBackground(String... urls) throws IOException, JSONException {//background로 돌아갈것
-                    HttpURLConnection con = null;
-                    JSONObject sendObject = new JSONObject();
-                    BufferedReader reader = null;
-                    URL url = new URL(urls[0] + Router_name);
-
-                    con = (HttpURLConnection) url.openConnection();
-
-                    sendObject.put("wifi_mac_address", MAC);
-
-                    con.setRequestMethod("POST");//POST방식으로 보냄
-                    con.setRequestProperty("Cache-Control", "no-cache");//캐시 설정
-                    con.setRequestProperty("Content-Type", "application/json");//application JSON 형식으로 전송
-                    con.setRequestProperty("Accept", "application/json");//서버에 response 데이터를 html로 받음
-                    con.setDoOutput(true);//Outstream으로 post 데이터를 넘겨주겠다는 의미
-                    con.setDoInput(true);//Inputstream으로 서버로부터 응답을 받겠다는 의미
-
-                    OutputStream outStream = con.getOutputStream();
-                    outStream.write(sendObject.toString().getBytes());
-                    outStream.flush();
-
-                    int responseCode = con.getResponseCode();
-                    if (responseCode == HttpURLConnection.HTTP_OK) {
-
-                        InputStream stream = con.getInputStream();
-                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                        byte[] byteBuffer = new byte[1024];
-                        byte[] byteData = null;
-                        int nLength = 0;
-                        while ((nLength = stream.read(byteBuffer, 0, byteBuffer.length)) != -1) {
-                            baos.write(byteBuffer, 0, nLength);
-                        }
-                        byteData = baos.toByteArray();
-                        String response = new String(byteData);
-                        JSONObject responseJSON = new JSONObject(response);
-
-                        this.response_result = (Integer) responseJSON.get("key");
-                        this.error_code = (String) responseJSON.get("err_code");
-                    }
-                }
-
-                @Override
-                protected void onPostExecute() {
-
-                }
-
-                @Override
-                public int getResult() {
-                    return response_result;
-                }
-
-                @Override
-                public String getErrorCode() {
-                    return error_code;
-                }
-            };
+            Course_like.setText(item.getPreference());
         }
 
     }
