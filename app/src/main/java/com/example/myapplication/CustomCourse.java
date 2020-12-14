@@ -3,9 +3,12 @@ package com.example.myapplication;
 import android.app.Activity;
 import android.app.FragmentManager;
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -21,6 +24,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.myapplication.Thread.ThreadTask;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -34,7 +38,17 @@ import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.material.button.MaterialButton;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -70,13 +84,18 @@ public class CustomCourse extends Fragment implements OnMapReadyCallback, Google
     private String Custom_course_detail;
     private String Latitude;
     private String Longitude;
-
+    private String ip;
     private double Starting_latitude;
     private double Starting_longitude;
+
+    private String Course_number;
 
     private TextView tv_marker;
 
     private ArrayList<custom_course_item> custom_course_items = new ArrayList<>();
+
+    private SharedPreferences location_information_pref;
+    private SharedPreferences.Editor location_infromation_editor;
 
     public CustomCourse() {
         // Required empty public constructor
@@ -131,17 +150,15 @@ public class CustomCourse extends Fragment implements OnMapReadyCallback, Google
         View v = inflater.inflate(R.layout.fragment_custom_course, container, false);
 
         ((MainActivity)getActivity()).resetToolbar();
+        ip = getContext().getString(R.string.server_ip);
 
-        final Geocoder geocoder = new Geocoder(getContext());
-        try {
-            list = geocoder.getFromLocationName(((MainActivity)getActivity()).getAddress(), 10);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        location_information_pref = getContext().getSharedPreferences("location_information", Activity.MODE_PRIVATE);
 
-        Address addr = list.get(0);
-        Starting_latitude = addr.getLatitude();
-        Starting_longitude = addr.getLongitude();
+        //location_infromation_editor = location_information_pref.edit();
+
+       // Address addr = list.get(0);
+        Starting_latitude = Double.parseDouble(Objects.requireNonNull(location_information_pref.getString("current_latitude", "")));
+        Starting_longitude = Double.parseDouble(Objects.requireNonNull(location_information_pref.getString("current_longitude", "")));
 
         Create_destination_button = v.findViewById(R.id.Create_new_destination);
         Custom_courses_confirm_button = v.findViewById(R.id.Custom_courses_confirm);
@@ -175,10 +192,173 @@ public class CustomCourse extends Fragment implements OnMapReadyCallback, Google
                 /**
                  * 저장버튼
                  * */
+                ThreadTask<Object> result_cour_number = getThreadTask_getCourse_number("/get_course_number");
+                result_cour_number.execute(ip);
 
+                if(result_cour_number.getResult() == 1){ //코스넘버 받아오기 성공
+                    Toast.makeText(getContext(), "저장되었습니다.", Toast.LENGTH_SHORT).show();
+                    for(int i = 0 ; i <custom_course_items.size() ; i++){
+                        ThreadTask<Object> result = getThreadTask_put_custom_Course(custom_course_items.get(i), "/put_course_information");
+                        result.execute(ip);
+                    }
+                }
+//                custom_course_items.clear();
+//                recycleAdaptors.setItems(custom_course_items);
+//                Custom_Course_recycler_view.setAdapter(recycleAdaptors);
+//                Toast.makeText(getContext(), "저장되었습니다.", Toast.LENGTH_SHORT).show();
             }
         });
         return v;
+    }
+
+    private ThreadTask<Object> getThreadTask_put_custom_Course(custom_course_item item, String Router_name){
+
+        return new ThreadTask<Object>() {
+            private int response_result;
+            private String error_code;
+            @Override
+            protected void onPreExecute() {// excute 전에
+
+            }
+
+            @Override
+            protected void doInBackground(String... urls) throws IOException, JSONException {//background로 돌아갈것
+                HttpURLConnection con = null;
+                JSONObject sendObject = new JSONObject();
+                BufferedReader reader = null;
+                URL url = new URL(urls[0] + Router_name);
+
+                con = (HttpURLConnection) url.openConnection();
+
+                sendObject.put("Course_number", Course_number);
+                sendObject.put("Name", item.getCustom_course_name());
+                sendObject.put("Address", item.getCustom_course_detail());
+                sendObject.put("Latitude", item.getLatitude());
+                sendObject.put("Longitude", item.getLongitude());
+
+                con.setRequestMethod("POST");//POST방식으로 보냄
+                con.setRequestProperty("Cache-Control", "no-cache");//캐시 설정
+                con.setRequestProperty("Content-Type", "application/json");//application JSON 형식으로 전송
+                con.setRequestProperty("Accept", "application/json");//서버에 response 데이터를 html로 받음
+                con.setDoOutput(true);//Outstream으로 post 데이터를 넘겨주겠다는 의미
+                con.setDoInput(true);//Inputstream으로 서버로부터 응답을 받겠다는 의미
+
+                OutputStream outStream = con.getOutputStream();
+                outStream.write(sendObject.toString().getBytes());
+                outStream.flush();
+
+                int responseCode = con.getResponseCode();
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+
+                    InputStream stream = con.getInputStream();
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    byte[] byteBuffer = new byte[1024];
+                    byte[] byteData = null;
+                    int nLength = 0;
+                    while ((nLength = stream.read(byteBuffer, 0, byteBuffer.length)) != -1) {
+                        baos.write(byteBuffer, 0, nLength);
+                    }
+                    byteData = baos.toByteArray();
+                    String response = new String(byteData);
+                    JSONObject responseJSON = new JSONObject(response);
+
+                    response_result = (Integer) responseJSON.get("key");
+                    //this.error_code = (String) responseJSON.get("err_code");
+
+                    //Log.e("twtwtww", String.format("번호 : %s, 주소 :", Phonenumber));
+                }
+            }
+
+            @Override
+            protected void onPostExecute() {
+
+            }
+
+            @Override
+            public int getResult() {
+                return response_result;
+            }
+
+            @Override
+            public String getErrorCode() {
+                return error_code;
+            }
+        };
+    }
+
+    private ThreadTask<Object> getThreadTask_getCourse_number( String Router_name){
+
+        return new ThreadTask<Object>() {
+            private int response_result;
+            private String error_code;
+            @Override
+            protected void onPreExecute() {// excute 전에
+
+            }
+
+            @Override
+            protected void doInBackground(String... urls) throws IOException, JSONException {//background로 돌아갈것
+                HttpURLConnection con = null;
+                JSONObject sendObject = new JSONObject();
+                BufferedReader reader = null;
+                URL url = new URL(urls[0] + Router_name);
+
+                con = (HttpURLConnection) url.openConnection();
+
+//                for(int i = 0 ; i < custom_course_items.size() ; i++){
+//                    sendObject.put("course"+Integer.toString(i), custom_course_items.get(i).getCustom_course_name());
+//                    custom_course_items.get(i).
+//                }
+
+                con.setRequestMethod("POST");//POST방식으로 보냄
+                con.setRequestProperty("Cache-Control", "no-cache");//캐시 설정
+                con.setRequestProperty("Content-Type", "application/json");//application JSON 형식으로 전송
+                con.setRequestProperty("Accept", "application/json");//서버에 response 데이터를 html로 받음
+                con.setDoOutput(true);//Outstream으로 post 데이터를 넘겨주겠다는 의미
+                con.setDoInput(true);//Inputstream으로 서버로부터 응답을 받겠다는 의미
+
+                OutputStream outStream = con.getOutputStream();
+                outStream.write(sendObject.toString().getBytes());
+                outStream.flush();
+
+                int responseCode = con.getResponseCode();
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+
+                    InputStream stream = con.getInputStream();
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    byte[] byteBuffer = new byte[1024];
+                    byte[] byteData = null;
+                    int nLength = 0;
+                    while ((nLength = stream.read(byteBuffer, 0, byteBuffer.length)) != -1) {
+                        baos.write(byteBuffer, 0, nLength);
+                    }
+                    byteData = baos.toByteArray();
+                    String response = new String(byteData);
+                    JSONObject responseJSON = new JSONObject(response);
+
+                    response_result = (Integer) responseJSON.get("key");
+                    Course_number = Integer.toString( (Integer) responseJSON.get("Course_number"));
+                    //this.error_code = (String) responseJSON.get("err_code");
+
+                    //Log.e("twtwtww", String.format("번호 : %s, 주소 :", Phonenumber));
+                }
+            }
+
+            @Override
+            protected void onPostExecute() {
+
+            }
+
+            @Override
+            public int getResult() {
+                return response_result;
+            }
+
+            @Override
+            public String getErrorCode() {
+                return error_code;
+            }
+        };
     }
 
     public com.google.android.gms.maps.GoogleMap getGoogleMap() {
@@ -241,6 +421,85 @@ public class CustomCourse extends Fragment implements OnMapReadyCallback, Google
         }
     }
 
+    private ThreadTask<Object> getThreadTask_getMAPInform(String kind, String starting_latitude, String starting_longitude, String Router_name){
+
+        return new ThreadTask<Object>() {
+            private int response_result;
+            private String error_code;
+            @Override
+            protected void onPreExecute() {// excute 전에
+
+            }
+
+            @Override
+            protected void doInBackground(String... urls) throws IOException, JSONException {//background로 돌아갈것
+                HttpURLConnection con = null;
+                JSONObject sendObject = new JSONObject();
+                BufferedReader reader = null;
+                URL url = new URL(urls[0] + Router_name);
+
+                con = (HttpURLConnection) url.openConnection();
+
+                sendObject.put("kind", kind);
+                sendObject.put("latitude", starting_latitude);
+                sendObject.put("longitude", starting_longitude);
+
+                con.setRequestMethod("POST");//POST방식으로 보냄
+                con.setRequestProperty("Cache-Control", "no-cache");//캐시 설정
+                con.setRequestProperty("Content-Type", "application/json");//application JSON 형식으로 전송
+                con.setRequestProperty("Accept", "application/json");//서버에 response 데이터를 html로 받음
+                con.setDoOutput(true);//Outstream으로 post 데이터를 넘겨주겠다는 의미
+                con.setDoInput(true);//Inputstream으로 서버로부터 응답을 받겠다는 의미
+
+                OutputStream outStream = con.getOutputStream();
+                outStream.write(sendObject.toString().getBytes());
+                outStream.flush();
+
+                int responseCode = con.getResponseCode();
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+
+                    InputStream stream = con.getInputStream();
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    byte[] byteBuffer = new byte[1024];
+                    byte[] byteData = null;
+                    int nLength = 0;
+                    while ((nLength = stream.read(byteBuffer, 0, byteBuffer.length)) != -1) {
+                        baos.write(byteBuffer, 0, nLength);
+                    }
+                    byteData = baos.toByteArray();
+                    String response = new String(byteData);
+                    JSONObject responseJSON = new JSONObject(response);
+
+                    //                this.response_result = (Integer) responseJSON.get("key");
+                    //this.error_code = (String) responseJSON.get("err_code");
+
+                    // JSONObject test = (JSONObject) responseJSON.get("data");
+                    //Course_total_array = (JSONArray) responseJSON.get("data");
+//                    Name = (String) test.get("inst_name");
+//                    Phonenumber = (String) test.get("phone_number");
+//                    Address = (String) test.get("inst_address");
+
+                    // Log.e("twtwtwsdfw", String.format("번호 : %s, 주소 :", test));
+                }
+            }
+
+            @Override
+            protected void onPostExecute() {
+
+            }
+
+            @Override
+            public int getResult() {
+                return response_result;
+            }
+
+            @Override
+            public String getErrorCode() {
+                return error_code;
+            }
+        };
+    }
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
         setGoogleMap(googleMap);
@@ -273,9 +532,13 @@ public class CustomCourse extends Fragment implements OnMapReadyCallback, Google
 
                 markerOptions.position(new LatLng(temp_latitude,temp_longitude));
                 markerOptions.title(custom_course_items.get(i).getCustom_course_name());
+                Uri gmmIntentUri = Uri.parse("geo:$"+temp_latitude+","+temp_longitude+"?q="+custom_course_items.get(i).getCustom_course_name());
+                Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+                mapIntent.setPackage("com.google.android.apps.maps");
+                //startActivity(mapIntent);
 
                 marker = googleMap.addMarker(markerOptions);
-                marker.showInfoWindow();
+                //marker.showInfoWindow();
             }
             Polyline polyline= googleMap.addPolyline(polylineOptions);
             polyline.setColor(Color.RED);
