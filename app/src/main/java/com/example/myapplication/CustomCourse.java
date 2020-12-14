@@ -1,8 +1,10 @@
 package com.example.myapplication;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.FragmentManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -18,13 +20,16 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.myapplication.Thread.ThreadTask;
+import com.example.myapplication.ui.login.LoginActivity;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -37,6 +42,9 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.material.button.MaterialButton;
+import com.kakao.network.ErrorResult;
+import com.kakao.usermgmt.UserManagement;
+import com.kakao.usermgmt.callback.UnLinkResponseCallback;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -87,7 +95,7 @@ public class CustomCourse extends Fragment implements OnMapReadyCallback, Google
     private String ip;
     private double Starting_latitude;
     private double Starting_longitude;
-
+    private Bundle mbundle;
     private String Course_number;
 
     private TextView tv_marker;
@@ -122,7 +130,7 @@ public class CustomCourse extends Fragment implements OnMapReadyCallback, Google
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         MainActivity activity = (MainActivity)getActivity();
-        Bundle mbundle = activity.mbundle;
+        mbundle = activity.mbundle;
         if(mbundle != null){
             Custom_course_name = mbundle.getString("destination");
             Custom_course_detail = mbundle.getString("address");
@@ -192,26 +200,56 @@ public class CustomCourse extends Fragment implements OnMapReadyCallback, Google
                 /**
                  * 저장버튼
                  * */
-                ThreadTask<Object> result_cour_number = getThreadTask_getCourse_number("/get_course_number");
-                result_cour_number.execute(ip);
+                EditText et = new EditText(getContext());
+                et.setGravity(Gravity.CENTER);
+                AlertDialog.Builder msgBuilder = new AlertDialog.Builder(getActivity())
+                        .setTitle("알림")
+                        .setMessage("저장할 코스 이름을 입력해주세요.")
+                        .setView(et)
+                        .setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                            @Override public void onClick(DialogInterface dialogInterface, int i)
+                            {
+                                ThreadTask<Object> result_cour_number = getThreadTask_getCourse_number("/get_course_number");
+                                result_cour_number.execute(ip);
+                                String Course_name = et.getText().toString();
+                                if(result_cour_number.getResult() == 1){ //코스넘버 받아오기 성공
 
-                if(result_cour_number.getResult() == 1){ //코스넘버 받아오기 성공
-                    Toast.makeText(getContext(), "저장되었습니다.", Toast.LENGTH_SHORT).show();
-                    for(int i = 0 ; i <custom_course_items.size() ; i++){
-                        ThreadTask<Object> result = getThreadTask_put_custom_Course(custom_course_items.get(i), "/put_course_information");
-                        result.execute(ip);
-                    }
-                }
-//                custom_course_items.clear();
-//                recycleAdaptors.setItems(custom_course_items);
-//                Custom_Course_recycler_view.setAdapter(recycleAdaptors);
-//                Toast.makeText(getContext(), "저장되었습니다.", Toast.LENGTH_SHORT).show();
+                                    for(int j = 0 ; j <custom_course_items.size() ; j++){
+                                        ThreadTask<Object> result = getThreadTask_put_custom_Course(custom_course_items.get(i), Course_name, "/put_course_information");
+                                        result.execute(ip);
+                                        if(result.getResult() != 1) break;
+                                    }
+                                    custom_course_items.clear();
+                                    recycleAdaptors.setItems(custom_course_items);
+                                    Custom_Course_recycler_view.setAdapter(recycleAdaptors);
+
+
+
+                                    LatLng starting_point = new LatLng(Starting_latitude, Starting_longitude);
+                                    CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(starting_point, 14);
+                                    googleMap.moveCamera(CameraUpdateFactory.newLatLng(starting_point));
+                                    googleMap.animateCamera(cameraUpdate);
+                                    googleMap.clear();
+
+                                    MainActivity activity = (MainActivity)getActivity();
+                                    activity.mbundle = null;
+                                    Toast.makeText(getContext(), "저장되었습니다.", Toast.LENGTH_SHORT).show();
+                                }
+                            } })
+                        .setNegativeButton("취소", new DialogInterface.OnClickListener() {
+                            @Override public void onClick(DialogInterface dialogInterface, int i) {
+
+                            } });
+                AlertDialog msgDlg = msgBuilder.create();
+                msgDlg.show();
+
+
             }
         });
         return v;
     }
 
-    private ThreadTask<Object> getThreadTask_put_custom_Course(custom_course_item item, String Router_name){
+    private ThreadTask<Object> getThreadTask_put_custom_Course(custom_course_item item,String Course_name, String Router_name){
 
         return new ThreadTask<Object>() {
             private int response_result;
@@ -231,11 +269,14 @@ public class CustomCourse extends Fragment implements OnMapReadyCallback, Google
                 con = (HttpURLConnection) url.openConnection();
 
                 sendObject.put("Course_number", Course_number);
+                sendObject.put("Course_name", Course_name);
                 sendObject.put("Name", item.getCustom_course_name());
                 sendObject.put("Address", item.getCustom_course_detail());
                 sendObject.put("Latitude", item.getLatitude());
                 sendObject.put("Longitude", item.getLongitude());
 
+                Log.e("CustomCourse ", String.format("%s %s %s"
+                        ,  item.getCustom_course_detail(), item.getLatitude(), item.getLongitude()));
                 con.setRequestMethod("POST");//POST방식으로 보냄
                 con.setRequestProperty("Cache-Control", "no-cache");//캐시 설정
                 con.setRequestProperty("Content-Type", "application/json");//application JSON 형식으로 전송
