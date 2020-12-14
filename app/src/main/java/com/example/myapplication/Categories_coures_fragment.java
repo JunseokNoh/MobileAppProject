@@ -159,7 +159,7 @@ public class Categories_coures_fragment extends Fragment  implements OnMapReadyC
             kind = "음식";
         }
         else if(mParam2.equals("카페")){
-            kind = "커피숍";
+            kind = "카페";
         }
         else if(mParam2.equals("놀거리")){
             kind = "놀거리";

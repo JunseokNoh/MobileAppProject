@@ -16,6 +16,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.dinuscxj.progressbar.CircleProgressBar;
 import com.example.myapplication.Thread.ThreadTask;
@@ -37,11 +38,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link Home_fragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class Home_fragment extends Fragment {
 
     // TODO: Rename parameter arguments, choose names that match
@@ -134,53 +130,59 @@ public class Home_fragment extends Fragment {
         ThreadTask<Object> result = getThreadTask_getMAPInform(Starting_latitude, Starting_longitude, "/get_Recommend_information_top5");
         result.execute(ip);
 
-        int next_course_num = -1;
-        int current_course_num;
+        if(Course_total_array.length() > 0){
+            int next_course_num = -1;
+            int current_course_num;
 
-        try {
-            for (int i = 0; i < Course_total_array.length(); i++) {
-                Log.e("Recommaned_course", "들어왓다.");
-                JSONObject temp_object = Course_total_array.getJSONObject(i);
-                System.out.println(temp_object);
-                String Course_name = temp_object.getString("Course_name");
-                String Name = temp_object.getString("Name");
-                String address = temp_object.getString("Address");
-                String Latitude = Double.toString(temp_object.getDouble("latitude"));
-                String Longitude = Double.toString(temp_object.getDouble("longitude"));
-                String Course_num = Integer.toString(temp_object.getInt("Course_num"));
-                String Preference = Integer.toString(temp_object.getInt("Preference"));
+            try {
+                for (int i = 0; i < Course_total_array.length(); i++) {
+                    Log.e("Recommaned_course", "들어왓다.");
+                    JSONObject temp_object = Course_total_array.getJSONObject(i);
+                    System.out.println(temp_object);
+                    String Course_name = temp_object.getString("Course_name");
+                    String Name = temp_object.getString("Name");
+                    String address = temp_object.getString("Address");
+                    String Latitude = Double.toString(temp_object.getDouble("latitude"));
+                    String Longitude = Double.toString(temp_object.getDouble("longitude"));
+                    String Course_num = Integer.toString(temp_object.getInt("Course_num"));
+                    String Preference = Integer.toString(temp_object.getInt("Preference"));
 
-                Log.e("Recommanded_course test", String.format("%s %s %s %s %s %s", Course_name, Course_num, Name, address, Latitude, Longitude));
-                current_course_num = Integer.parseInt(Course_num);
+                    Log.e("Recommanded_course test", String.format("%s %s %s %s %s %s", Course_name, Course_num, Name, address, Latitude, Longitude));
+                    current_course_num = Integer.parseInt(Course_num);
 
-                course_list.add(new course_item(Name, address, Latitude, Longitude));
+                    course_list.add(new course_item(Name, address, Latitude, Longitude));
 
-                if (i + 1 < Course_total_array.length()) {
-                    JSONObject temp_object2 = Course_total_array.getJSONObject(i + 1);
-                    next_course_num = temp_object2.getInt("Course_num");
-                    if (current_course_num != next_course_num) {
+                    if (i + 1 < Course_total_array.length()) {
+                        JSONObject temp_object2 = Course_total_array.getJSONObject(i + 1);
+                        next_course_num = temp_object2.getInt("Course_num");
+                        if (current_course_num != next_course_num) {
+                            for (int j = 0; j < course_list.size(); j++) {
+                                Log.e("Recommanded_course test222", String.format("%s %s %s %s", course_list.get(j).getPlace_name(), course_list.get(j).getAddress(), course_list.get(j).getLatitude(), course_list.get(j).getLongitude()));
+                            }
+                            RecommandedCourseDataList.add(new Recommanded_course_item(Course_name, Course_num, Preference, course_list));
+                            course_list = new ArrayList<>();
+                        }
+                    } else if (i == Course_total_array.length() - 1) {
                         for (int j = 0; j < course_list.size(); j++) {
                             Log.e("Recommanded_course test222", String.format("%s %s %s %s", course_list.get(j).getPlace_name(), course_list.get(j).getAddress(), course_list.get(j).getLatitude(), course_list.get(j).getLongitude()));
                         }
                         RecommandedCourseDataList.add(new Recommanded_course_item(Course_name, Course_num, Preference, course_list));
                         course_list = new ArrayList<>();
                     }
-                } else if (i == Course_total_array.length() - 1) {
-                    for (int j = 0; j < course_list.size(); j++) {
-                        Log.e("Recommanded_course test222", String.format("%s %s %s %s", course_list.get(j).getPlace_name(), course_list.get(j).getAddress(), course_list.get(j).getLatitude(), course_list.get(j).getLongitude()));
-                    }
-                    RecommandedCourseDataList.add(new Recommanded_course_item(Course_name, Course_num, Preference, course_list));
-                    course_list = new ArrayList<>();
                 }
+
+            } catch (Exception e) {
+
             }
 
-        } catch (Exception e) {
-
+            recycleAdaptors = new RecycleAdaptors_Curse_rank(ip);
+            recycleAdaptors.setItems(RecommandedCourseDataList);
+            recyclerView.setAdapter(recycleAdaptors);
+        }
+        else{
+            Toast.makeText(getContext(), "해당 지역에 검색된 결과가 없습니다.", Toast.LENGTH_SHORT).show();
         }
 
-        recycleAdaptors = new RecycleAdaptors_Curse_rank(ip);
-        recycleAdaptors.setItems(RecommandedCourseDataList);
-        recyclerView.setAdapter(recycleAdaptors);
         return v;
     }
 
