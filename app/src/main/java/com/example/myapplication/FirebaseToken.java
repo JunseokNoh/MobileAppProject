@@ -89,40 +89,40 @@ public class FirebaseToken extends FirebaseMessagingService {
         data_array = remoteMessage.getData().get("data_array");
         Log.e("twtwertretertert", String.format("%s + %s", Latitude, Longitude));
         createNotificationChannel();
-        getHeadup(messageBody, messageTitle, Latitude, Longitude, Phone_number, data_array);
+        //getHeadup(messageBody, messageTitle, Latitude, Longitude, Phone_number, data_array);
     }
-    private void getHeadup(String title, String body, String Latitude, String Longitude, String Phone_number, String data_array){
-        Intent snoozeIntent = new Intent(this,FalldownActivity.class);
-        snoozeIntent.setAction("ACTION_SNOOZE");
-        snoozeIntent.putExtra("EXTRA_NOTIFICATION_ID", 0);
-        snoozeIntent.putExtra("latitude", Latitude);
-        snoozeIntent.putExtra("longitude", Longitude);
-        snoozeIntent.putExtra("phone_number", Phone_number);
-        snoozeIntent.putExtra("data_array", data_array);
-
-        snoozeIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        PendingIntent snoozePendingIntent =
-                PendingIntent.getActivity(this, 0, snoozeIntent, PendingIntent.FLAG_ONE_SHOT | PendingIntent.FLAG_CANCEL_CURRENT);
-
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_menu_slideshow)
-                .setContentTitle(title)
-                .setContentText(body)
-                .setStyle(new NotificationCompat.BigTextStyle()
-                        .bigText(body))
-                .setPriority(NotificationCompat.PRIORITY_MAX)
-                .setDefaults(Notification.DEFAULT_VIBRATE)
-                .setFullScreenIntent(snoozePendingIntent, false)
-                .setContentIntent(snoozePendingIntent);
-                //.setAutoCancel(true);
-
-
-        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
-
-        // notificationId is a unique int for each notification that you must define
-        int notificationId = 15;
-        notificationManager.notify(notificationId, builder.build());
-    }
+//    private void getHeadup(String title, String body, String Latitude, String Longitude, String Phone_number, String data_array){
+//        Intent snoozeIntent = new Intent(this,FalldownActivity.class);
+//        snoozeIntent.setAction("ACTION_SNOOZE");
+//        snoozeIntent.putExtra("EXTRA_NOTIFICATION_ID", 0);
+//        snoozeIntent.putExtra("latitude", Latitude);
+//        snoozeIntent.putExtra("longitude", Longitude);
+//        snoozeIntent.putExtra("phone_number", Phone_number);
+//        snoozeIntent.putExtra("data_array", data_array);
+//
+//        snoozeIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//        PendingIntent snoozePendingIntent =
+//                PendingIntent.getActivity(this, 0, snoozeIntent, PendingIntent.FLAG_ONE_SHOT | PendingIntent.FLAG_CANCEL_CURRENT);
+//
+//        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
+//                .setSmallIcon(R.drawable.ic_menu_slideshow)
+//                .setContentTitle(title)
+//                .setContentText(body)
+//                .setStyle(new NotificationCompat.BigTextStyle()
+//                        .bigText(body))
+//                .setPriority(NotificationCompat.PRIORITY_MAX)
+//                .setDefaults(Notification.DEFAULT_VIBRATE)
+//                .setFullScreenIntent(snoozePendingIntent, false)
+//                .setContentIntent(snoozePendingIntent);
+//                //.setAutoCancel(true);
+//
+//
+//        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+//
+//        // notificationId is a unique int for each notification that you must define
+//        int notificationId = 15;
+//        notificationManager.notify(notificationId, builder.build());
+//    }
     private void createNotificationChannel() {
         // Create the NotificationChannel, but only on API 26+ because
         // the NotificationChannel class is new and not in the support library
@@ -136,45 +136,6 @@ public class FirebaseToken extends FirebaseMessagingService {
             // or other notification behaviors after this
             NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);//NotificationManager.class
             notificationManager.createNotificationChannel(channel);
-        }
-    }
-    private void sendNotification(String messageBody, String messageTitle) {
-        //////////////////////////// 포그라운드 및 백그라운드 푸시알림 처리 ////////////////////////////
-        Intent intent = new Intent(this, RegisterActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
-                PendingIntent.FLAG_ONE_SHOT | PendingIntent.FLAG_CANCEL_CURRENT);
-
-        CharSequence name = getString(R.string.channel_name);
-        String description = getString(R.string.channel_description);
-        int importance = NotificationManager.IMPORTANCE_HIGH;
-        NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        NotificationChannel mChannel = new NotificationChannel(CHANNEL_ID, name, importance);
-
-        mChannel.setDescription(description);
-        mChannel.enableLights(true);
-        mNotificationManager.createNotificationChannel(mChannel);
-        mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
-        int notifyID = 2;
-
-        String CHANNEL_ID = "my_channel_02";
-
-        try {
-            Notification notification = new Notification.Builder(FirebaseToken.this)
-                    .setContentTitle(URLDecoder.decode(messageTitle, "UTF-8"))
-                    .setContentText(URLDecoder.decode(messageBody, "UTF-8"))
-                    .setSmallIcon(R.drawable.ic_menu_slideshow)
-                    .setChannelId(CHANNEL_ID)
-                    .setContentIntent(pendingIntent)
-                    .build();
-//
-//            MediaPlayer mediaPlayer = MediaPlayer.create(this, R.drawable.ic_menu_slideshow);
-//            mediaPlayer.start();
-
-            mNotificationManager.notify(notifyID, notification);
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 }

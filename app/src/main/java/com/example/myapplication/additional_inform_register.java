@@ -115,16 +115,8 @@ public class additional_inform_register extends AppCompatActivity {
                             //휴대폰 번호 양식 에러 (재입력 요구)
                         }
                         else if(result.getResult() == 3){
-                            //회원 가입 성공
-//                            SharedPreferences pref = getSharedPreferences("login_information", Activity.MODE_PRIVATE);
-//                            SharedPreferences.Editor editor = pref.edit();
-//                            editor.putString("email" , email);
-//                            editor.putString("login_type" , login_type);
-//                            editor.commit();
 
                             Intent intent = new Intent(additional_inform_register.this, account_register_complete.class);
-                            //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-
                             startActivity(intent);
                             //남아있는 모든 activity 지우기
                             ActivityCompat.finishAffinity(additional_inform_register.this);

@@ -79,16 +79,10 @@ public class Categories_coures_fragment extends Fragment  implements OnMapReadyC
 
     private LinearLayoutManager layoutManager;
 
-    private Double start_latitude;
-    private Double start_longitude;
-    private String target_phone;
-    private String data_array;
     private JSONArray Course_total_array;
     private JSONArray Course_array;
     private String Starting_latitude;
     private String Starting_longitude;
-    String Email;
-    private SharedPreferences login_information_pref;
 
     private String ip;
     private String input;
@@ -169,10 +163,6 @@ public class Categories_coures_fragment extends Fragment  implements OnMapReadyC
         }
         ThreadTask<Object> result = getThreadTask_getMAPInform(kind,Starting_latitude, Starting_longitude, "/map_category_information");
         result.execute(ip);
-
-//        String input ="{"+
-//                "data_array:" + "[{\"Course_Name\" : \"추천코스1\", \"Course_id\" : \"0\", \"Course\" : [{\"Place_name\" : \"place1\", \"latitude\" : \"35.88565632201131\", \"longitude\" : \"128.6119264468393\"},{\"Place_name\" : \"place2\", \"latitude\" : \"35.88492137332584\", \"longitude\" : \"128.60971990159663\"},{\"Place_name\" : \"place3\", \"latitude\" : \"35.88253371936135\", \"longitude\" : \"128.60998957938452\"}]},{\"Course_Name\" : \"추천코스2\", \"Course_id\" : \"1\", \"Course\" : [{\"Place_name\" : \"place4\", \"latitude\" : \"35.884365190327685\", \"longitude\" : \"128.60770459025358\"},{\"Place_name\" : \"place5\", \"latitude\" : \"35.88213627620797\", \"longitude\" : \"128.60587875777216\"},{\"Place_name\" : \"place6\", \"latitude\" : \"35.884528069549695\", \"longitude\" : \"128.6060717434991\"} ]}]"
-//                +"}";
 
         String input ="{"+
                 "Course:"  +"[{\"Place_name\" : \"맥시멈짐\",\"Place_detail\" : \"place detail1\", \"latitude\" : \"35.88214144011649\", \"longitude\" : \"128.60999144632964\"},{\"Place_name\" : \"place2\",\"Place_detail\" : \"place detail2\", \"latitude\" : \"35.88492137332584\", \"longitude\" : \"128.60971990159663\"},{\"Place_name\" : \"place3\",\"Place_detail\" : \"place detail3\", \"latitude\" : \"35.88253371936135\", \"longitude\" : \"128.60998957938452\"}]"
@@ -300,7 +290,7 @@ public class Categories_coures_fragment extends Fragment  implements OnMapReadyC
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        //액티비티가 처음 생성될 때 실행되는 함수
+
         if(mapView != null)
         {
             mapView.onCreate(savedInstanceState);
@@ -311,15 +301,12 @@ public class Categories_coures_fragment extends Fragment  implements OnMapReadyC
 
         setGoogleMap(googleMap);
         GMap.setOnMarkerClickListener(this);
-        // 구글에서 등록한 api와 엮어주기
-        // 시작위치를 서울 시청으로 변경
+
         /**
          * 센서 위치 시작 지점 받아오기
          * */
         LatLng Starting_Point = new LatLng(Double.parseDouble(Starting_latitude), Double.parseDouble(Starting_longitude)); // 스타팅 지점
         getGoogleMap().moveCamera(CameraUpdateFactory.newLatLngZoom(Starting_Point, 14));
-
-        //GMap.animateCamera(CameraUpdateFactory.zoomTo(14));// 키우면 더 확대
 
         // 시작시 마커 생성하기 누르면 title과 snippet이 뜬다.
         MarkerOptions markerOptions = new MarkerOptions();
@@ -327,30 +314,6 @@ public class Categories_coures_fragment extends Fragment  implements OnMapReadyC
         double Longtitude;
 
         Marker marker = null;
-//        for(int i = 0 ; i < HospitalDataList.size() ; i++){
-////            Latitude = Double.parseDouble(HospitalDataList.get(i).getLatitude());
-////            Longtitude = Double.parseDouble(HospitalDataList.get(i).getLongtitude());
-////
-//////            markerOptions.position(new LatLng(Latitude,Longtitude));
-//////            markerOptions.title(HospitalDataList.get(i).getHospital_name());
-////            //markerOptions.snippet(Hos);
-////            // 생성된 마커 옵션을 지도에 표시
-////
-////            //marker = GMap.addMarker(markerOptions);
-////            //marker.showInfoWindow();
-////            marker = GMap.addMarker(new MarkerOptions()
-////                    .position(new LatLng(Latitude,Longtitude))
-////                    .title(HospitalDataList.get(i).getHospital_name() ));
-////        }
-////        marker.showInfoWindow();
-        // 서울광장마커
-
-        // 회사 DB에 데이터를 가지고 있어야 된다.
-//        LatLng plaza = new LatLng(37.565785, 126.978056);
-//        markerOptions.position(plaza);
-//        markerOptions.title("광장");
-//        markerOptions.snippet("서울 광장");
-//        GMap.addMarker(markerOptions);
 
         //맵 로드 된 이후
         GMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {

@@ -41,16 +41,9 @@ public class LoginViewModel extends ViewModel {
     }
 
     public void login(String username, String password, String ip) { // 로그인 버튼을 누르고 나서 결과
-        // can be launched in a separate asynchronous job
 
-        //Result<LoggedInUser> result = loginRepository.login(username, password); // 로그인 결과
         ThreadTask<Object> request = getThreadTask_normal_sign_in(username, password, "/normal_sign_in");
         request.execute(ip);
-//        if (result instanceof Result.Success && username.equals("ljs3271@naver.com") && isUserNameValid(username)
-//                && password.equals("123456") && isPasswordValid(password)) {
-        //username, password를 전송하고 , 결과값을 보고 true이면 mainactivity로 false이면 올바르지 않은 계정이라고
-        // 이 때 로그인 성공시 email, name 을 sharedpreference에 저장. login type 은 general로
-
 
         if (request.getResult() == 1) {
             //이메일 양식 에러

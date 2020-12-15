@@ -26,7 +26,6 @@
         <activity android:name=".Change_PW" />
         <activity android:name=".User_inform" />
         <activity android:name=".Tutorial" />
-        <activity android:name=".NearHospital" />
         <activity android:name=".splashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -34,7 +33,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".FalldownActivity" />
         <activity android:name="temp.Sensor_inform" />
         <activity android:name=".DaumWebViewActivity" />
         <activity android:name=".delete_accout_activity" />
@@ -89,12 +87,6 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".ContentActivity"
-            android:parentActivityName=".MainActivity" />
-        <activity
-            android:name=".SubActivity"
-            android:parentActivityName=".MainActivity" />
         <activity
             android:name=".RegisterActivity"
             android:parentActivityName=".ui.login.LoginActivity" />

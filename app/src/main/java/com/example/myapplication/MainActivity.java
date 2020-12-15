@@ -88,7 +88,6 @@ public class MainActivity<pirvate> extends AppCompatActivity implements Navigati
     private Home_fragment home_fragment;
     private CustomCourse customCourse_fragment;
     private Mypage_fragment mypage_fragment;
-    private Hospital_fragment hospital_fragment;
 
     private String ip;
     DrawerLayout drawer;
@@ -117,7 +116,7 @@ public class MainActivity<pirvate> extends AppCompatActivity implements Navigati
         home_fragment = new Home_fragment();
         customCourse_fragment = new CustomCourse();
         mypage_fragment = new Mypage_fragment();
-        hospital_fragment = new Hospital_fragment();
+        //hospital_fragment = new Hospital_fragment();
 
         login_information_pref = getSharedPreferences("login_information", Context.MODE_PRIVATE);
         Email = login_information_pref.getString("email", "");
@@ -176,9 +175,8 @@ public class MainActivity<pirvate> extends AppCompatActivity implements Navigati
                                 toolbartext.setText(Address);
                                 return true;
                             case R.id.tab4 :
-                                Intent intent = new Intent(MainActivity.this, NearHospital.class);
-                                startActivity(intent);
-                                //toolbartext.setText("피보호자 근처의 병원입니다");
+                                //Intent intent = new Intent(MainActivity.this, NearHospital.class);
+                                //startActivity(intent);
                                 return true;
                         }
                         return false;

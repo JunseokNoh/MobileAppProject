@@ -166,10 +166,6 @@ public class Recommanded_Course extends AppCompatActivity  implements OnMapReady
         mapFragment.getMapAsync(this);
 
 
-        /**
-         * 근처 병원 위치 다 받아오기
-         * */
-
     }
 
     private ThreadTask<Object> getThreadTask_getMAPInform(String starting_latitude, String starting_longitude, String Router_name){
@@ -404,15 +400,7 @@ public class Recommanded_Course extends AppCompatActivity  implements OnMapReady
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                //System.out.println(layoutManager.canScrollVertically());
-//                int position = 0;
-//                for( Hospital hospital : HospitalDataList ){
-//                    if(hospital.getHospital_name().equals(marker.getTitle())){
-//                        System.out.println(hospital.getHospital_name());
-//                        Hospital_recycler_view.smoothScrollToPosition(position);
-//                    }
-//                    position++;
-//                }
+
             }
         }, 200);
         return false;

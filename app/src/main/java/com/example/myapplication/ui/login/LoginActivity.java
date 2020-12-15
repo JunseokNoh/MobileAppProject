@@ -274,7 +274,7 @@ public class LoginActivity extends AppCompatActivity  {
                                 login_infromation_editor.commit();
 //                                startActivity(intent);
 //                                finish();
-                                Intent intent = new Intent(LoginActivity.this, Tutorial.class);
+                                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                                 startActivity(intent);
                                 finish();
                             }
@@ -359,7 +359,7 @@ public class LoginActivity extends AppCompatActivity  {
                     login_infromation_editor.commit();
 
                     //Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                    Intent intent = new Intent(LoginActivity.this, Tutorial.class);
+                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                     startActivity(intent);
                     finish();
                 }
@@ -451,7 +451,6 @@ public class LoginActivity extends AppCompatActivity  {
 
                 int responseCode = con.getResponseCode();
                 if (responseCode == HttpURLConnection.HTTP_OK) {
-
                     InputStream stream = con.getInputStream();
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
                     byte[] byteBuffer = new byte[1024];
@@ -463,7 +462,6 @@ public class LoginActivity extends AppCompatActivity  {
                     byteData = baos.toByteArray();
                     String response = new String(byteData);
                     JSONObject responseJSON = new JSONObject(response);
-
                     this.response_result = (Integer) responseJSON.get("key");
                     this.error_code = (String) responseJSON.get("err_code");
                 }

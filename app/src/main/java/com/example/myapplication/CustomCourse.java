@@ -346,11 +346,6 @@ public class CustomCourse extends Fragment implements OnMapReadyCallback, Google
 
                 con = (HttpURLConnection) url.openConnection();
 
-//                for(int i = 0 ; i < custom_course_items.size() ; i++){
-//                    sendObject.put("course"+Integer.toString(i), custom_course_items.get(i).getCustom_course_name());
-//                    custom_course_items.get(i).
-//                }
-
                 con.setRequestMethod("POST");//POST방식으로 보냄
                 con.setRequestProperty("Cache-Control", "no-cache");//캐시 설정
                 con.setRequestProperty("Content-Type", "application/json");//application JSON 형식으로 전송
@@ -461,86 +456,6 @@ public class CustomCourse extends Fragment implements OnMapReadyCallback, Google
             mapView.onCreate(savedInstanceState);
         }
     }
-
-    private ThreadTask<Object> getThreadTask_getMAPInform(String kind, String starting_latitude, String starting_longitude, String Router_name){
-
-        return new ThreadTask<Object>() {
-            private int response_result;
-            private String error_code;
-            @Override
-            protected void onPreExecute() {// excute 전에
-
-            }
-
-            @Override
-            protected void doInBackground(String... urls) throws IOException, JSONException {//background로 돌아갈것
-                HttpURLConnection con = null;
-                JSONObject sendObject = new JSONObject();
-                BufferedReader reader = null;
-                URL url = new URL(urls[0] + Router_name);
-
-                con = (HttpURLConnection) url.openConnection();
-
-                sendObject.put("kind", kind);
-                sendObject.put("latitude", starting_latitude);
-                sendObject.put("longitude", starting_longitude);
-
-                con.setRequestMethod("POST");//POST방식으로 보냄
-                con.setRequestProperty("Cache-Control", "no-cache");//캐시 설정
-                con.setRequestProperty("Content-Type", "application/json");//application JSON 형식으로 전송
-                con.setRequestProperty("Accept", "application/json");//서버에 response 데이터를 html로 받음
-                con.setDoOutput(true);//Outstream으로 post 데이터를 넘겨주겠다는 의미
-                con.setDoInput(true);//Inputstream으로 서버로부터 응답을 받겠다는 의미
-
-                OutputStream outStream = con.getOutputStream();
-                outStream.write(sendObject.toString().getBytes());
-                outStream.flush();
-
-                int responseCode = con.getResponseCode();
-                if (responseCode == HttpURLConnection.HTTP_OK) {
-
-                    InputStream stream = con.getInputStream();
-                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                    byte[] byteBuffer = new byte[1024];
-                    byte[] byteData = null;
-                    int nLength = 0;
-                    while ((nLength = stream.read(byteBuffer, 0, byteBuffer.length)) != -1) {
-                        baos.write(byteBuffer, 0, nLength);
-                    }
-                    byteData = baos.toByteArray();
-                    String response = new String(byteData);
-                    JSONObject responseJSON = new JSONObject(response);
-
-                    //                this.response_result = (Integer) responseJSON.get("key");
-                    //this.error_code = (String) responseJSON.get("err_code");
-
-                    // JSONObject test = (JSONObject) responseJSON.get("data");
-                    //Course_total_array = (JSONArray) responseJSON.get("data");
-//                    Name = (String) test.get("inst_name");
-//                    Phonenumber = (String) test.get("phone_number");
-//                    Address = (String) test.get("inst_address");
-
-                    // Log.e("twtwtwsdfw", String.format("번호 : %s, 주소 :", test));
-                }
-            }
-
-            @Override
-            protected void onPostExecute() {
-
-            }
-
-            @Override
-            public int getResult() {
-                return response_result;
-            }
-
-            @Override
-            public String getErrorCode() {
-                return error_code;
-            }
-        };
-    }
-
     @Override
     public void onMapReady(GoogleMap googleMap) {
         setGoogleMap(googleMap);

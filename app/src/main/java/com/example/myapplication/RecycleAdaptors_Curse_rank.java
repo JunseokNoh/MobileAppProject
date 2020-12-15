@@ -94,7 +94,6 @@ class RecycleAdaptors_Curse_rank extends RecyclerView.Adapter<RecycleAdaptors_Cu
 //            }
 //        });
         holder.setItem(item);
-
     }
 
     @Override
