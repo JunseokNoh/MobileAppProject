@@ -161,13 +161,12 @@ public class Categories_coures_fragment extends Fragment  implements OnMapReadyC
         else if(mParam2.equals("볼거리")){
             kind = "볼거리" ;
         }
-        ThreadTask<Object> result = getThreadTask_getMAPInform(kind,Starting_latitude, Starting_longitude, "/map_category_information");
+        ThreadTask<Object> result = getThreadTask_getMAPInform(kind,Starting_latitude, Starting_longitude, "3", "/map_category_information");
         result.execute(ip);
 
         String input ="{"+
                 "Course:"  +"[{\"Place_name\" : \"맥시멈짐\",\"Place_detail\" : \"place detail1\", \"latitude\" : \"35.88214144011649\", \"longitude\" : \"128.60999144632964\"},{\"Place_name\" : \"place2\",\"Place_detail\" : \"place detail2\", \"latitude\" : \"35.88492137332584\", \"longitude\" : \"128.60971990159663\"},{\"Place_name\" : \"place3\",\"Place_detail\" : \"place detail3\", \"latitude\" : \"35.88253371936135\", \"longitude\" : \"128.60998957938452\"}]"
                 +"}";
-
 
         JSONObject input_object = null;
         try {
@@ -183,14 +182,14 @@ public class Categories_coures_fragment extends Fragment  implements OnMapReadyC
                 String Place_detail = temp_object.getString("Address");
                 String Latitude = temp_object.getString("Latitude");
                 String Longitude = temp_object.getString("Longitude");
+                String Num = temp_object.getString("Num");
+                String Preference = Integer.toString(temp_object.getInt("Preference"));
 
                 if(j == 0){
                     Starting_latitude = Latitude;
                     Starting_longitude = Longitude;
                 }
-
-                course_list.add(new course_item(Place_name, Place_detail, Latitude, Longitude));
-
+                course_list.add(new course_item(Place_name, Place_detail, Latitude, Longitude, Num, Preference));
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -389,7 +388,7 @@ public class Categories_coures_fragment extends Fragment  implements OnMapReadyC
         return false;
     }
 
-    private ThreadTask<Object> getThreadTask_getMAPInform(String kind, String starting_latitude, String starting_longitude, String Router_name){
+    private ThreadTask<Object> getThreadTask_getMAPInform(String kind, String starting_latitude, String starting_longitude, String Radius, String Router_name){
 
         return new ThreadTask<Object>() {
             private int response_result;
@@ -411,6 +410,7 @@ public class Categories_coures_fragment extends Fragment  implements OnMapReadyC
                 sendObject.put("kind", kind);
                 sendObject.put("latitude", starting_latitude);
                 sendObject.put("longitude", starting_longitude);
+                sendObject.put("Radius",Radius);
 
                 con.setRequestMethod("POST");//POST방식으로 보냄
                 con.setRequestProperty("Cache-Control", "no-cache");//캐시 설정

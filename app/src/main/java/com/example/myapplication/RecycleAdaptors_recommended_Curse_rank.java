@@ -11,8 +11,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -27,6 +30,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.w3c.dom.Text;
@@ -39,6 +43,8 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.logging.Handler;
+import java.util.logging.LogRecord;
 
 class RecycleAdaptors_recommended_Curse_rank extends RecyclerView.Adapter<RecycleAdaptors_recommended_Curse_rank.CustomViewHolder> implements ItemTouchHelperListener{
     /**
@@ -51,12 +57,13 @@ class RecycleAdaptors_recommended_Curse_rank extends RecyclerView.Adapter<Recycl
     private GoogleMap googleMap;
     private View marker_root_view;
     private TextView tv_marker;
-
+    private String Course_number;
+    private Recommanded_course_item item;
     private SharedPreferences sensor_status_pref;
     private SharedPreferences.Editor sensor_status_editor;
 
     public RecycleAdaptors_recommended_Curse_rank(String ip, GoogleMap googleMap) {
-        ip = ip;
+        this.ip = ip;
         this.googleMap = googleMap;
     }
 
@@ -66,6 +73,14 @@ class RecycleAdaptors_recommended_Curse_rank extends RecyclerView.Adapter<Recycl
 
     public void setItems(ArrayList<Recommanded_course_item> items){
         RecommandedCourseDataList = items;
+    }
+
+    public void setCourse_number(String course_number) {
+        Course_number = course_number;
+    }
+
+    public String getCourse_number() {
+        return Course_number;
     }
 
     public void removeItems(int position){
@@ -88,17 +103,16 @@ class RecycleAdaptors_recommended_Curse_rank extends RecyclerView.Adapter<Recycl
         this.parent = parent;
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recommended_items, parent,false );
 
-        return new CustomViewHolder(view, ip);
+        return new CustomViewHolder(view, ip, parent);
     }
 
     @Override // 실제 추가될 때
     public void onBindViewHolder(@NonNull final RecycleAdaptors_recommended_Curse_rank.CustomViewHolder holder, final int position) {
 
-        Recommanded_course_item item = RecommandedCourseDataList.get(position);
+        item = RecommandedCourseDataList.get(position);
         ArrayList<course_item> course_list = item.getCourse_list();
 //        sensor_status_pref = parent.getContext().getSharedPreferences("Sensor_status", Activity.MODE_PRIVATE);
 //        sensor_status_editor = sensor_status_pref.edit();
-        Log.e("REcycleAdaptor test1","sdfsdfsdfsdfsdfsdfsdfsdf");
         holder.view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -137,9 +151,16 @@ class RecycleAdaptors_recommended_Curse_rank extends RecyclerView.Adapter<Recycl
                 //marker.showInfoWindow();
             }
         });
-        holder.setItem(item);
-       // String sensor_status = sensor_status_pref.getString("sensor"+position, "false");
 
+        if(Course_number != null && item.getCourse_id().equals(Course_number)){
+            holder.view.setSelected(true);
+            if(holder.view.performClick()){
+                //Toast.makeText(parent.getContext(), "선택됐다", Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        holder.setItem(item);
+        holder.setLikeButton(parent);
     }
 
     private Bitmap createDrawableFromView(Context context, View view) {
@@ -192,19 +213,63 @@ class RecycleAdaptors_recommended_Curse_rank extends RecyclerView.Adapter<Recycl
         protected LinearLayout view;
         protected TextView Course_name;
         protected TextView Course_detail;
+        protected ToggleButton like_button;
 
-//        private SharedPreferences sensor_status_pref;
-//        private SharedPreferences.Editor sensor_status_editor;
+        private Recommanded_course_item item;
 
-        public CustomViewHolder(@NonNull View itemView, String sensor_ip) {
+        private SharedPreferences Recommend_information_pref;
+        private SharedPreferences.Editor Recommend_infromation_editor;
+
+        public CustomViewHolder(@NonNull View itemView, String ip, ViewGroup parent) {
             super(itemView);
             view = itemView.findViewById(R.id.recommended_courses_item);
-            ip = sensor_ip;
+            this.ip = ip;
             Course_name  = (TextView)itemView.findViewById(R.id.recommended_courses_name);
             Course_detail = (TextView)itemView.findViewById(R.id.recommended_courses_destination);
+
+        }
+        public void setLikeButton( ViewGroup parent){
+            like_button = itemView.findViewById(R.id.like_button);
+            Recommend_information_pref = parent.getContext().getSharedPreferences("Toggle_information", Activity.MODE_PRIVATE);
+            Recommend_infromation_editor = Recommend_information_pref.edit();
+
+            String Toggle_state = Recommend_information_pref.getString("Toggle" + item.getPreference(), "false");
+            if(Toggle_state.equals("true")){
+                like_button.setChecked(true);
+            }
+
+            like_button.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    if(isChecked){//좋아요 누른거
+                        String Course_id = item.getCourse_id();
+                        ThreadTask<Object> result = getThreadTask_getMAPInform("on",Course_id, "/like_button");
+                        result.execute(ip);
+                        item.setPreference(Integer.toString( (Integer.parseInt(item.getPreference()) + 1)));
+                        Recommend_infromation_editor.putString("Toggle" + item.getPreference() , "true");
+                        Recommend_infromation_editor.commit();
+
+                        Course_detail.setText("추천수 : " +item.getPreference());
+                        Log.e("추천코스 좋아요 눌러짐 ",Course_id);
+                    }
+                    else{//안누른거
+                        String Course_id = item.getCourse_id();
+                        ThreadTask<Object> result = getThreadTask_getMAPInform("off", Course_id, "/like_button");
+                        result.execute(ip);
+                        Recommend_infromation_editor.putString("Toggle" + item.getPreference() , "false");
+                        Recommend_infromation_editor.commit();
+
+                        item.setPreference(Integer.toString( (Integer.parseInt(item.getPreference()) - 1)));
+                        Course_detail.setText("추천수 : " +item.getPreference());
+                        Log.e("추천코스 좋아요 꺼짐 ",Course_id);
+                    }
+                }
+            });
         }
 
+
         public void setItem(Recommanded_course_item item){
+            this.item = item;
             Course_name.setText(item.getCourse_name());
             String Course_detail_temp ="";
             for(course_item course : item.getCourse_list()){
@@ -213,7 +278,7 @@ class RecycleAdaptors_recommended_Curse_rank extends RecyclerView.Adapter<Recycl
             Course_detail.setText("추천수 : " + item.getPreference());
         }
 
-        private ThreadTask<Object> getThreadTask_macCheck(String MAC, String Router_name){
+        private ThreadTask<Object> getThreadTask_getMAPInform(String Button_state, String Course_id, String Router_name){
 
             return new ThreadTask<Object>() {
                 private int response_result;
@@ -232,7 +297,9 @@ class RecycleAdaptors_recommended_Curse_rank extends RecyclerView.Adapter<Recycl
 
                     con = (HttpURLConnection) url.openConnection();
 
-                    sendObject.put("wifi_mac_address", MAC);
+//                sendObject.put("kind", kind);
+                    sendObject.put("Course_number", Course_id);
+                    sendObject.put("Button_state", Button_state);
 
                     con.setRequestMethod("POST");//POST방식으로 보냄
                     con.setRequestProperty("Cache-Control", "no-cache");//캐시 설정
@@ -259,9 +326,9 @@ class RecycleAdaptors_recommended_Curse_rank extends RecyclerView.Adapter<Recycl
                         byteData = baos.toByteArray();
                         String response = new String(byteData);
                         JSONObject responseJSON = new JSONObject(response);
+                        response_result = (Integer) responseJSON.get("key");
 
-                        this.response_result = (Integer) responseJSON.get("key");
-                        this.error_code = (String) responseJSON.get("err_code");
+                        //Log.e("twtwtwsdfw", String.format("%s", Course_total_array));
                     }
                 }
 

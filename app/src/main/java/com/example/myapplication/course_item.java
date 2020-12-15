@@ -7,12 +7,32 @@ public class course_item {
     private String Latitude;
     private String Longitude;
     private String Address;
+    private String Place_number;
+    private String Preference;
 
-    public course_item(String place_name, String address, String latitude, String longitude){
+    public course_item(String place_name, String address, String latitude, String longitude, String place_number, String preference){
         Place_name = place_name;
         Address = address;
         Latitude = latitude;
         Longitude = longitude;
+        Place_number = place_number;
+        Preference = preference;
+    }
+
+    public void setPreference(String preference) {
+        Preference = preference;
+    }
+
+    public String getPreference() {
+        return Preference;
+    }
+
+    public void setPlace_number(String place_number) {
+        Place_number = place_number;
+    }
+
+    public String getPlace_number() {
+        return Place_number;
     }
 
     public void setAddress(String address) {

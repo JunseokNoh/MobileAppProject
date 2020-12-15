@@ -98,6 +98,7 @@ public class Home_fragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_home_fragment, container, false);
         RecommandedCourseDataList = new ArrayList<>();
         ((MainActivity) getActivity()).setToolbar();
+
 //        View header = inflater.inflate(R.layout.activity_main, null, false);
 //        MaterialTextView toolbartext = (MaterialTextView) header.findViewById(R.id.toolbar_textview);
 //
@@ -105,6 +106,7 @@ public class Home_fragment extends Fragment {
 //        String Address = login_information_pref.getString("address", "주소를 선택해주세요.");
 
 //        toolbartext.setText(Address);
+
         Recommended_button = v.findViewById(R.id.recommended_courses);
         Recommended_button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -146,11 +148,13 @@ public class Home_fragment extends Fragment {
                     String Longitude = Double.toString(temp_object.getDouble("longitude"));
                     String Course_num = Integer.toString(temp_object.getInt("Course_num"));
                     String Preference = Integer.toString(temp_object.getInt("Preference"));
-
+                    if(Preference == null){
+                        Preference ="0";
+                    }
                     Log.e("Recommanded_course test", String.format("%s %s %s %s %s %s", Course_name, Course_num, Name, address, Latitude, Longitude));
                     current_course_num = Integer.parseInt(Course_num);
 
-                    course_list.add(new course_item(Name, address, Latitude, Longitude));
+                    course_list.add(new course_item(Name, address, Latitude, Longitude,"0",Preference ));
 
                     if (i + 1 < Course_total_array.length()) {
                         JSONObject temp_object2 = Course_total_array.getJSONObject(i + 1);
@@ -208,6 +212,7 @@ public class Home_fragment extends Fragment {
 //                sendObject.put("kind", kind);
                 sendObject.put("latitude", starting_latitude);
                 sendObject.put("longitude", starting_longitude);
+                Log.e("위경도 전송완료","위경도 전송완료");
 
                 con.setRequestMethod("POST");//POST방식으로 보냄
                 con.setRequestProperty("Cache-Control", "no-cache");//캐시 설정

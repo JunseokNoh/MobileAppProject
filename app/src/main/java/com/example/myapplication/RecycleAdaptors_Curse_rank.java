@@ -1,5 +1,6 @@
 package com.example.myapplication;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -22,6 +23,7 @@ import com.example.myapplication.Thread.ThreadTask;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -76,24 +78,14 @@ class RecycleAdaptors_Curse_rank extends RecyclerView.Adapter<RecycleAdaptors_Cu
     public RecycleAdaptors_Curse_rank.CustomViewHolder onCreateViewHolder(@NonNull ViewGroup parent, final int viewType) {
         this.parent = parent;
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.course_rank_list, parent,false );
-
-        return new CustomViewHolder(view, ip);
+        return new CustomViewHolder(view, ip, this.position, parent);
     }
 
     @Override // 실제 추가될 때
     public void onBindViewHolder(@NonNull final RecycleAdaptors_Curse_rank.CustomViewHolder holder, final int position) {
-
         Recommanded_course_item item = RecommandedCourseDataList.get(position);
-
-//        holder.view.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Intent intent = new Intent(parent.getContext(), Recommanded_Course.class);
-//                //intent.putExtra("position", item.getCourse_id());
-//                holder.view.getContext().startActivity(intent);
-//            }
-//        });
-        holder.setItem(item);
+        this.position = position;
+        holder.setItem(item, position);
     }
 
     @Override
@@ -125,17 +117,37 @@ class RecycleAdaptors_Curse_rank extends RecyclerView.Adapter<RecycleAdaptors_Cu
         protected LinearLayout view;
         protected TextView Course_name;
         protected TextView Course_like;
+        protected TextView Course_Rank;
 
-        public CustomViewHolder(@NonNull View itemView, String sensor_ip) {
+        int position;
+        Recommanded_course_item item;
+
+        public CustomViewHolder(@NonNull View itemView, String sensor_ip, int position, ViewGroup parent) {
             super(itemView);
             ip = sensor_ip;
+            this.position = position;
+            view = itemView.findViewById(R.id.Course_Rank_list_item);
             Course_name  = (TextView)itemView.findViewById(R.id.Course_Rank_name);
             Course_like = (TextView)itemView.findViewById(R.id.Course_Rank_like);
+            Course_Rank = (TextView)itemView.findViewById(R.id.Course_Rank);
+
+            view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(parent.getContext(), Recommanded_Course.class);
+                    intent.putExtra("Course_number", item.getCourse_id());
+                    //Toast.makeText(parent.getContext(), String.format("%s번째 입니다.",item.getCourse_id() ),Toast.LENGTH_SHORT).show();
+                    view.getContext().startActivity(intent);
+                }
+            });
         }
 
-        public void setItem(Recommanded_course_item item){
+        @SuppressLint("DefaultLocale")
+        public void setItem(Recommanded_course_item item, int position){
+            this.item = item;
             Course_name.setText(item.getCourse_name());
             Course_like.setText(item.getPreference());
+            Course_Rank.setText(String.format("%d",position+1));
         }
 
     }

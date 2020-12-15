@@ -12,12 +12,17 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.myapplication.Thread.ThreadTask;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -57,7 +62,7 @@ class RecycleAdaptors_categories_Curse_rank extends RecyclerView.Adapter<Recycle
     private SharedPreferences.Editor sensor_status_editor;
 
     public RecycleAdaptors_categories_Curse_rank(String ip, GoogleMap googleMap) {
-        ip = ip;
+        this.ip = ip;
         this.googleMap = googleMap;
     }
 
@@ -151,8 +156,8 @@ class RecycleAdaptors_categories_Curse_rank extends RecyclerView.Adapter<Recycle
             }
 
         });
-        holder.setItem(item);
-
+        holder.setItem(item, parent);
+        holder.setLikeButton(parent);
     }
     private void setCustomMarkerView() {
         marker_root_view = LayoutInflater.from(parent.getContext()).inflate(R.layout.marker_hydrogenstation, null);
@@ -257,6 +262,12 @@ class RecycleAdaptors_categories_Curse_rank extends RecyclerView.Adapter<Recycle
         protected LinearLayout view;
         protected TextView Course_name;
         protected TextView Course_detail;
+        protected ImageView Place_image;
+        protected ToggleButton like_button;
+        protected TextView like_text;
+
+        private SharedPreferences user_information_pref;
+        private course_item item;
 
         public CustomViewHolder(@NonNull View itemView, String sensor_ip) {
             super(itemView);
@@ -264,20 +275,63 @@ class RecycleAdaptors_categories_Curse_rank extends RecyclerView.Adapter<Recycle
             ip = sensor_ip;
             Course_name  = (TextView)itemView.findViewById(R.id.categories_courses_name);
             Course_detail = (TextView)itemView.findViewById(R.id.categories_courses_destination);
-            view.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
+            like_text = itemView.findViewById(R.id.place_like_count);
 
+            Place_image = itemView.findViewById(R.id.Place_image);
+        }
+
+        public void setItem(course_item item, ViewGroup parent){
+            this.item = item;
+            Course_name.setText(item.getPlace_name());
+            String address = item.getAddress();
+            int Delete_index = address.indexOf("(");
+            if(Delete_index > 0){
+                address = address.substring(0, Delete_index-1);
+            }
+            Course_detail.setText(address);
+            String imageUrl = "https://search.pstatic.net/common/?autoRotate=true&quality=95&type=w750&src=https%3A%2F%2Fmyplace-phinf.pstatic.net%2F20201215_8%2F1608019505600mWPUm_JPEG%2Fupload_93cc3717fb91900c13b2f68b3a9ab946.jpg";
+            Glide.with(parent.getContext()).load(imageUrl).into(Place_image);
+            like_text.setText("추천수 "+ item.getPreference());
+        }
+
+        public void setLikeButton( ViewGroup parent){
+            like_button = itemView.findViewById(R.id.like_button);
+
+            user_information_pref = parent.getContext().getSharedPreferences("login_information", Activity.MODE_PRIVATE);
+            String email = user_information_pref.getString("email", "");
+            String num = item.getPlace_number();
+            //Toast.makeText(parent.getContext(), String.format("%s %s %s", email, num, ip),Toast.LENGTH_SHORT).show();
+            ThreadTask<Object> result = getThreadTask_getLikeStatus(email, num, item.getLatitude(), item.getLongitude(), "3",  "/check_like");
+            result.execute(ip);
+
+            if(result.getResult() == 1){//클릭이 아직 안됨.
+
+            }
+            else if(result.getResult() == 0){//이미클릭 됨
+                like_button.setChecked(true);
+            }
+
+            like_button.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    if(isChecked){
+                        Toast.makeText(parent.getContext(), "좋아요 눌렀다",Toast.LENGTH_SHORT).show();
+                        ThreadTask<Object> result = getThreadTask_getMAPInform("unchecked", email, num, "/like_button_v2");
+                        result.execute(ip);
+                        like_text.setText("추천수 "+Integer.toString(result.getResult()));
+
+                    }
+                    else{
+                        Toast.makeText(parent.getContext(), "좋아요 해제",Toast.LENGTH_SHORT).show();
+                        ThreadTask<Object> result = getThreadTask_getMAPInform("checked", email, num, "/like_button_v2");
+                        result.execute(ip);
+                        like_text.setText("추천수 "+Integer.toString(result.getResult()));
+                    }
                 }
             });
         }
 
-        public void setItem(course_item item){
-            Course_name.setText(item.getPlace_name());
-            Course_detail.setText(item.getAddress());
-        }
-
-        private ThreadTask<Object> getThreadTask_macCheck(String MAC, String Router_name){
+        private ThreadTask<Object> getThreadTask_getLikeStatus(String Email, String Num, String Latitude, String Longitude, String Radius ,String Router_name){
 
             return new ThreadTask<Object>() {
                 private int response_result;
@@ -296,7 +350,12 @@ class RecycleAdaptors_categories_Curse_rank extends RecyclerView.Adapter<Recycle
 
                     con = (HttpURLConnection) url.openConnection();
 
-                    sendObject.put("wifi_mac_address", MAC);
+//                sendObject.put("kind", kind);
+                    sendObject.put("email_address", Email);
+                    sendObject.put("Num", Num);
+                    sendObject.put("Latitude", Latitude);
+                    sendObject.put("Longitude", Longitude);
+                    sendObject.put("Radius", Radius);
 
                     con.setRequestMethod("POST");//POST방식으로 보냄
                     con.setRequestProperty("Cache-Control", "no-cache");//캐시 설정
@@ -324,8 +383,82 @@ class RecycleAdaptors_categories_Curse_rank extends RecyclerView.Adapter<Recycle
                         String response = new String(byteData);
                         JSONObject responseJSON = new JSONObject(response);
 
-                        this.response_result = (Integer) responseJSON.get("key");
-                        this.error_code = (String) responseJSON.get("err_code");
+                        response_result = (Integer) responseJSON.get("key");
+
+                        //Log.e("twtwtwsdfw", String.format("%s", Course_total_array));
+                    }
+                }
+
+                @Override
+                protected void onPostExecute() {
+
+                }
+
+                @Override
+                public int getResult() {
+                    return response_result;
+                }
+
+                @Override
+                public String getErrorCode() {
+                    return error_code;
+                }
+            };
+        }
+
+        private ThreadTask<Object> getThreadTask_getMAPInform(String Button_state, String Email, String Num, String Router_name){
+
+            return new ThreadTask<Object>() {
+                private int response_result;
+                private String error_code;
+
+                @Override
+                protected void onPreExecute() {// excute 전에
+
+                }
+
+                @Override
+                protected void doInBackground(String... urls) throws IOException, JSONException {//background로 돌아갈것
+                    HttpURLConnection con = null;
+                    JSONObject sendObject = new JSONObject();
+                    BufferedReader reader = null;
+                    URL url = new URL(urls[0] + Router_name);
+
+                    con = (HttpURLConnection) url.openConnection();
+
+                    sendObject.put("Button_state", Button_state);
+                    sendObject.put("email_address", Email);
+                    sendObject.put("Num", Num);
+
+                    con.setRequestMethod("POST");//POST방식으로 보냄
+                    con.setRequestProperty("Cache-Control", "no-cache");//캐시 설정
+                    con.setRequestProperty("Content-Type", "application/json");//application JSON 형식으로 전송
+                    con.setRequestProperty("Accept", "application/json");//서버에 response 데이터를 html로 받음
+                    con.setDoOutput(true);//Outstream으로 post 데이터를 넘겨주겠다는 의미
+                    con.setDoInput(true);//Inputstream으로 서버로부터 응답을 받겠다는 의미
+
+                    OutputStream outStream = con.getOutputStream();
+                    outStream.write(sendObject.toString().getBytes());
+                    outStream.flush();
+
+                    int responseCode = con.getResponseCode();
+                    if (responseCode == HttpURLConnection.HTTP_OK) {
+
+                        InputStream stream = con.getInputStream();
+                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                        byte[] byteBuffer = new byte[1024];
+                        byte[] byteData = null;
+                        int nLength = 0;
+                        while ((nLength = stream.read(byteBuffer, 0, byteBuffer.length)) != -1) {
+                            baos.write(byteBuffer, 0, nLength);
+                        }
+                        byteData = baos.toByteArray();
+                        String response = new String(byteData);
+                        JSONObject responseJSON = new JSONObject(response);
+
+                        response_result = (Integer) responseJSON.get("key");
+
+                        //Log.e("twtwtwsdfw", String.format("%s", Course_total_array));
                     }
                 }
 

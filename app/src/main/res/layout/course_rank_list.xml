@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="70dp"
     android:orientation="vertical"
+    android:id="@+id/Course_Rank_list_item"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <LinearLayout

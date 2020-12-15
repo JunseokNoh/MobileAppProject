@@ -19,7 +19,7 @@
             android:layout_height="70dp"/>
 
         <LinearLayout
-            android:layout_width="320dp"
+            android:layout_width="300dp"
             android:layout_height="match_parent"
             android:orientation="vertical">
 
@@ -50,11 +50,17 @@
         </LinearLayout>
         <LinearLayout
             android:layout_width="50dp"
+            android:layout_marginRight="10dp"
             android:layout_height="match_parent">
-            <com.google.android.material.button.MaterialButton
+            <ToggleButton
+                android:layout_gravity="center"
                 android:id="@+id/like_button"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
+                android:layout_width="50dp"
+                android:background="@drawable/edge_circle"
+                android:textOn="좋아요눌러짐"
+                android:textOff="좋아요안누름"
+                android:layout_height="50dp"/>
+
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>

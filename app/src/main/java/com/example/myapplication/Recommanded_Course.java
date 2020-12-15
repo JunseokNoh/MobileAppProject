@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.app.Activity;
 import android.app.FragmentManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.location.Address;
 import android.location.Geocoder;
@@ -15,6 +16,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -68,6 +71,9 @@ public class Recommanded_Course extends AppCompatActivity  implements OnMapReady
 
     private SharedPreferences login_information_pref;
     private SharedPreferences location_information_pref;
+    private String getCourse_number_from_Home;
+
+    private Button backButton;
 
     private String ip;
     private String input;
@@ -80,6 +86,11 @@ public class Recommanded_Course extends AppCompatActivity  implements OnMapReady
         setContentView(R.layout.activity_recommanded__course);
         ip = getString(R.string.server_ip);
 
+        Intent getintent = getIntent();
+        getCourse_number_from_Home = getintent.getStringExtra("Course_number");
+        if(getCourse_number_from_Home != null){
+            //Toast.makeText(getApplicationContext(), getintent.getStringExtra("Course_number"), Toast.LENGTH_SHORT).show();
+        }
         Utils.setStatusBarColor(this, Utils.StatusBarcolorType.BLACK_STATUS_BAR);
         location_information_pref = getSharedPreferences("location_information", Activity.MODE_PRIVATE);
 
@@ -95,6 +106,15 @@ public class Recommanded_Course extends AppCompatActivity  implements OnMapReady
         //actionBar.setDisplayHomeAsUpEnabled(true);
         toolbartext = (MaterialTextView)findViewById(R.id.toolbar_textview);
 
+        backButton = findViewById(R.id.recommended_courses_confirm);
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Recommanded_Course.this, MainActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        });
 
         toolbartext.setText(Address);
         Recommanded_recycler_view = findViewById(R.id.recommended_courses_Recycler_view);
@@ -129,11 +149,13 @@ public class Recommanded_Course extends AppCompatActivity  implements OnMapReady
                     String Longitude = Double.toString(temp_object.getDouble("longitude"));
                     String Course_num = Integer.toString(temp_object.getInt("Course_num"));
                     String Preference = Integer.toString(temp_object.getInt("Preference"));
-
+                    if(Preference == null){
+                        Preference ="0";
+                    }
                     Log.e("Recommanded_course test", String.format("%s %s %s %s %s %s", Course_name, Course_num,Name, address, Latitude, Longitude));
                     current_course_num = Integer.parseInt(Course_num);
 
-                    course_list.add(new course_item(Name, address, Latitude, Longitude));
+                    course_list.add(new course_item(Name, address, Latitude, Longitude,"0", Preference));
 
 
                     if(i + 1 < Course_total_array.length()){
@@ -381,6 +403,9 @@ public class Recommanded_Course extends AppCompatActivity  implements OnMapReady
 
         recycleAdaptors = new RecycleAdaptors_recommended_Curse_rank(ip, getGoogleMap());
         recycleAdaptors.setItems(RecommandedCourseDataList);
+        if(getCourse_number_from_Home != null){
+            recycleAdaptors.setCourse_number(getCourse_number_from_Home);
+        }
         Recommanded_recycler_view.setAdapter(recycleAdaptors);
 
     }

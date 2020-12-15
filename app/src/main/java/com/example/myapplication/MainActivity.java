@@ -222,6 +222,9 @@ public class MainActivity<pirvate> extends AppCompatActivity implements Navigati
 
     }
 
+    void getHomeFragment(){
+        getSupportFragmentManager().beginTransaction().replace(R.id.container , home_fragment).commit();
+    }
     String getAddress(){
         return Address;
     }
@@ -453,7 +456,6 @@ public class MainActivity<pirvate> extends AppCompatActivity implements Navigati
 
     }
 
-
     private long time = 0;
     @Override
     public void onBackPressed() {
@@ -552,6 +554,8 @@ public class MainActivity<pirvate> extends AppCompatActivity implements Navigati
                         location_infromation_editor = location_information_pref.edit();
                         location_infromation_editor.putString("address", data);
                         location_infromation_editor.commit();
+                        Home_fragment home_fragment = Home_fragment.newInstance("","");
+                        getSupportFragmentManager().beginTransaction().replace(R.id.container , home_fragment).commit();
                     }
                 }
                 break;

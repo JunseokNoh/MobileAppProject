@@ -182,8 +182,8 @@ public class CustomCourse extends Fragment implements OnMapReadyCallback, Google
             public void onClick(View v) {
                 String Custom_course_name = "목적지를 선택해주세요.";
                 String Custom_course_detail = " ";
-                String Latitude = "33";
-                String Longitude = "158";
+                String Latitude = "";
+                String Longitude = "";
                 custom_course_items.add(new custom_course_item(Custom_course_name, Custom_course_detail, Latitude, Longitude));
                 recycleAdaptors.setItems(custom_course_items);
                 Custom_Course_recycler_view.setAdapter(recycleAdaptors);
@@ -474,33 +474,34 @@ public class CustomCourse extends Fragment implements OnMapReadyCallback, Google
         if(custom_course_items.size() > 0){
             for(int i = 0 ; i < custom_course_items.size(); i ++){
                 //googleMap.clear();
-                Log.e("CustomCurse Test22", String.format("%s %s %s %s", custom_course_items.get(i).getCustom_course_name(),
-                        custom_course_items.get(i).getCustom_course_detail(),
-                        custom_course_items.get(i).getLatitude()
-                        , custom_course_items.get(i).getLongitude()));
+                if(!custom_course_items.get(i).getCustom_course_name().equals("목적지를 선택해주세요.")){
+                    Log.e("CustomCurse Test22", String.format("%s %s %s %s", custom_course_items.get(i).getCustom_course_name(),
+                            custom_course_items.get(i).getCustom_course_detail(),
+                            custom_course_items.get(i).getLatitude()
+                            , custom_course_items.get(i).getLongitude()));
 
-                double temp_latitude = Double.parseDouble(custom_course_items.get(i).getLatitude());
-                double temp_longitude = Double.parseDouble(custom_course_items.get(i).getLongitude());
+                    double temp_latitude = Double.parseDouble(custom_course_items.get(i).getLatitude());
+                    double temp_longitude = Double.parseDouble(custom_course_items.get(i).getLongitude());
 
-                polylineOptions.add(new LatLng(temp_latitude,temp_longitude));
-                LatLng Starting_Point = new LatLng(temp_latitude, temp_longitude); // 스타팅 지점
-                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(Starting_Point, 14));
+                    polylineOptions.add(new LatLng(temp_latitude,temp_longitude));
+                    LatLng Starting_Point = new LatLng(temp_latitude, temp_longitude); // 스타팅 지점
+                    googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(Starting_Point, 14));
 
-                markerOptions.position(new LatLng(temp_latitude,temp_longitude));
-                markerOptions.title(custom_course_items.get(i).getCustom_course_name());
-                Uri gmmIntentUri = Uri.parse("geo:$"+temp_latitude+","+temp_longitude+"?q="+custom_course_items.get(i).getCustom_course_name());
-                Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
-                mapIntent.setPackage("com.google.android.apps.maps");
-                //startActivity(mapIntent);
+                    markerOptions.position(new LatLng(temp_latitude,temp_longitude));
+                    markerOptions.title(custom_course_items.get(i).getCustom_course_name());
+                    Uri gmmIntentUri = Uri.parse("geo:$"+temp_latitude+","+temp_longitude+"?q="+custom_course_items.get(i).getCustom_course_name());
+                    Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+                    mapIntent.setPackage("com.google.android.apps.maps");
+                    //startActivity(mapIntent);
 
-                marker = googleMap.addMarker(markerOptions);
-                //marker.showInfoWindow();
+                    marker = googleMap.addMarker(markerOptions);
+                    //marker.showInfoWindow();
+                }
             }
             Polyline polyline= googleMap.addPolyline(polylineOptions);
             polyline.setColor(Color.RED);
             polyline.setTag("A");
         }
-
 
         recycleAdaptors = new RecycleAdaptors_custom_course((MainActivity)getActivity(), getGoogleMap());
         recycleAdaptors.setItems(custom_course_items);
