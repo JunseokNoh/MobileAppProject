@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplication.Thread.ThreadTask;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -40,6 +42,8 @@ class RecycleAdaptors_custom_course extends RecyclerView.Adapter<RecycleAdaptors
     private ViewGroup parent;
     ArrayList<custom_course_item> Custom_course_List = new ArrayList<>();
     private String ip;
+    private String Km;
+    private Spinner KmSpinner;
 
     custom_course_item course_item;
 
@@ -51,6 +55,22 @@ class RecycleAdaptors_custom_course extends RecyclerView.Adapter<RecycleAdaptors
     public RecycleAdaptors_custom_course(FragmentActivity activity, GoogleMap googleMap) {
         this.googleMap = googleMap;
         this.activity = activity;
+    }
+
+    public void setKmSpinner(Spinner kmSpinner) {
+        KmSpinner = kmSpinner;
+    }
+
+    public Spinner getKmSpinner() {
+        return KmSpinner;
+    }
+
+    public void setKm(String km) {
+        Km = km;
+    }
+
+    public String getKm() {
+        return Km;
     }
 
     public void addItem(custom_course_item item){
@@ -96,8 +116,9 @@ class RecycleAdaptors_custom_course extends RecyclerView.Adapter<RecycleAdaptors
 //                Intent intent = new Intent(parent.getContext(), choice_category.class);
 //                holder.view.getContext().startActivity(intent);
                 //choice_course_fragment.newInstance()
-                
-               ((MainActivity)activity).replaceFragment(choice_course_fragment.newInstance(Integer.toString(position), " "));
+                String km = getKmSpinner().getSelectedItem().toString().replace("km", "");
+
+               ((MainActivity)activity).replaceFragment(choice_course_fragment.newInstance(Integer.toString(position), " ", km));
             }
         });
 

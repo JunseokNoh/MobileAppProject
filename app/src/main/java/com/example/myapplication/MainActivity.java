@@ -174,10 +174,6 @@ public class MainActivity<pirvate> extends AppCompatActivity implements Navigati
                                 getSupportFragmentManager().beginTransaction().replace(R.id.container, mypage_fragment).commit();
                                 toolbartext.setText(Address);
                                 return true;
-                            case R.id.tab4 :
-                                //Intent intent = new Intent(MainActivity.this, NearHospital.class);
-                                //startActivity(intent);
-                                return true;
                         }
                         return false;
                     }

@@ -30,7 +30,7 @@
 
         <LinearLayout
             android:layout_width="360dp"
-            android:layout_height="240dp"
+            android:layout_height="250dp"
             android:layout_marginTop="70dp"
             android:layout_marginBottom="10dp"
             android:orientation="vertical"
@@ -44,10 +44,12 @@
             <EditText
                 android:id="@+id/username"
                 android:layout_width="320dp"
+                android:layout_marginTop="5dp"
                 android:layout_height="65dp"
                 android:layout_marginLeft="20dp"
                 android:autofillHints="@string/prompt_email"
-                android:background="@drawable/edge3"
+                android:background="@drawable/edge25"
+                android:elevation="5dp"
                 android:hint="@string/prompt_email"
                 android:inputType="textEmailAddress"
                 android:paddingLeft="12dp"
@@ -61,7 +63,8 @@
                 android:layout_marginLeft="20dp"
                 android:layout_marginTop="5dp"
                 android:autofillHints="@string/prompt_password"
-                android:background="@drawable/edge3"
+                android:background="@drawable/edge25"
+                android:elevation="5dp"
                 android:hint="@string/prompt_password"
                 android:imeActionLabel="@string/action_sign_in_short"
                 android:imeOptions="actionDone"
@@ -90,8 +93,10 @@
                 android:id="@+id/login"
                 android:layout_width="320dp"
                 android:layout_height="56dp"
+                android:layout_marginTop="3dp"
                 android:layout_gravity="start"
                 android:layout_marginLeft="20dp"
+                android:elevation="5dp"
                 android:enabled="false"
                 android:text="@string/action_sign_in"
                 android:textSize="16sp"
@@ -146,7 +151,7 @@
         android:id="@+id/materialTextView"
         android:layout_width="409dp"
         android:layout_height="59dp"
-        android:background="@drawable/edge8"
+        android:background="@drawable/edge24"
         android:gravity="center"
         android:text="로그인이 필요해요"
         android:textColor="@color/login_font"
@@ -209,6 +214,7 @@
             android:layout_height="62dp"
             android:layout_marginLeft="20dp"
             android:layout_marginTop="10dp"
+            android:elevation="5dp"
             android:background="@drawable/ic_anyconv__kakao_login_button"
             tools:ignore="MissingConstraints" />
 
@@ -217,6 +223,7 @@
             android:layout_width="308dp"
             android:layout_height="60dp"
             android:layout_marginTop="5dp"
+            android:elevation="5dp"
             android:src="@drawable/login_btn_img" />
     </LinearLayout>
 

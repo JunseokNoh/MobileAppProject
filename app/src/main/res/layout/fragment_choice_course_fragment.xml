@@ -4,79 +4,141 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".choice_category">
+    tools:context=".choice_course_fragment">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="600dp"
+        android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:orientation="vertical">
+        android:layout_marginTop="100dp">
 
-        <LinearLayout
+
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="400dp"
-            android:orientation="vertical"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:layout_marginTop="100dp">
+            android:layout_height="match_parent">
 
-            <LinearLayout
+            <ImageButton
+                android:id="@+id/restaurant"
+                android:layout_width="296dp"
+                android:layout_height="94dp"
+                android:layout_marginTop="32dp"
+                android:clickable="true"
+                android:gravity="center"
+                android:elevation="20dp"
+                android:src="@drawable/place_button1"
+                android:textSize="22sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+
+            <TextView
                 android:layout_width="wrap_content"
-                android:layout_height="200dp"
-                android:layout_gravity="center">
+                android:layout_height="wrap_content"
+                android:text="마시기"
+                android:textColor="@color/login_font"
+                android:textSize="28sp"
+                android:textStyle="bold"
+                android:translationZ="100dp"
+                app:layout_constraintBottom_toBottomOf="@+id/coffee"
+                app:layout_constraintEnd_toEndOf="@+id/coffee"
+                app:layout_constraintStart_toStartOf="@+id/coffee"
+                app:layout_constraintTop_toTopOf="@+id/coffee" />
 
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/restaurant"
-                    android:layout_width="200dp"
-                    android:layout_height="200dp"
-                    android:background="@drawable/edge20"
-                    android:gravity="center"
-                    android:text="식당"
-                    android:clickable="true"
-                    android:textSize="22sp" />
+            <ImageButton
+                android:id="@+id/coffee"
+                android:layout_width="296dp"
+                android:layout_height="94dp"
+                android:layout_marginTop="16dp"
+                android:clickable="true"
+                android:elevation="20dp"
+                android:gravity="center"
+                android:src="@drawable/place_button2"
+                android:text="마시기"
+                android:textSize="22sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/restaurant" />
 
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/coffee"
-                    android:layout_width="200dp"
-                    android:layout_height="200dp"
-                    android:background="@drawable/edge20"
-                    android:gravity="center"
-                    android:text="카페"
-                    android:clickable="true"
-                    android:textSize="22sp" />
-            </LinearLayout>
-
-            <LinearLayout
+            <TextView
+                android:id="@+id/textView1"
                 android:layout_width="wrap_content"
-                android:layout_height="200dp"
-                android:layout_gravity="center">
+                android:layout_height="wrap_content"
+                android:text="먹기"
+                android:textColor="@color/login_font"
+                android:textSize="28sp"
+                android:textStyle="bold"
+                android:translationZ="100dp"
+                app:layout_constraintBottom_toBottomOf="@+id/restaurant"
+                app:layout_constraintEnd_toEndOf="@+id/restaurant"
+                app:layout_constraintStart_toStartOf="@+id/restaurant"
+                app:layout_constraintTop_toTopOf="@+id/restaurant" />
 
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/play"
-                    android:layout_width="200dp"
-                    android:layout_height="200dp"
-                    android:background="@drawable/edge20"
-                    android:gravity="center"
-                    android:text="놀기"
-                    android:clickable="true"
-                    android:textSize="22sp" />
+            <TextView
+                android:id="@+id/textView5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="놀거리"
+                android:textColor="@color/login_font"
+                android:textSize="28sp"
+                android:textStyle="bold"
+                android:translationZ="100dp"
+                app:layout_constraintBottom_toBottomOf="@+id/play"
+                app:layout_constraintEnd_toEndOf="@+id/play"
+                app:layout_constraintStart_toStartOf="@+id/play"
+                app:layout_constraintTop_toTopOf="@+id/play" />
 
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/lookThings"
-                    android:layout_width="200dp"
-                    android:layout_height="200dp"
-                    android:background="@drawable/edge20"
-                    android:gravity="center"
-                    android:text="볼거리"
-                    android:clickable="true"
-                    android:textSize="22sp" />
-            </LinearLayout>
-        </LinearLayout>
+            <ImageButton
+                android:id="@+id/play"
+                android:layout_width="296dp"
+                android:layout_height="94dp"
+                android:layout_marginTop="16dp"
+                android:clickable="true"
+                android:gravity="center"
+                android:src="@drawable/place_button3"
+                android:text="놀기"
+                android:textSize="22sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/coffee" />
+
+            <TextView
+                android:id="@+id/textView6"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="볼거리"
+                android:textColor="@color/login_font"
+                android:textSize="28sp"
+                android:textStyle="bold"
+                android:translationZ="100dp"
+                app:layout_constraintBottom_toBottomOf="@+id/lookThings"
+                app:layout_constraintEnd_toEndOf="@+id/lookThings"
+                app:layout_constraintStart_toStartOf="@+id/lookThings"
+                app:layout_constraintTop_toTopOf="@+id/lookThings" />
+
+            <ImageButton
+                android:id="@+id/lookThings"
+                android:layout_width="296dp"
+                android:layout_height="94dp"
+                android:layout_marginTop="16dp"
+                android:clickable="true"
+                android:gravity="center"
+                android:elevation="20dp"
+                android:src="@drawable/place_button4"
+                android:text="볼거리"
+                android:textSize="22sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/play" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

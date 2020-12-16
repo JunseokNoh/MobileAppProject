@@ -80,6 +80,7 @@ public class Mypage_fragment extends Fragment {
 
     private MaterialTextView EmailView;
     private MaterialTextView NameView;
+    private MaterialTextView MyCourseView;
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -161,6 +162,15 @@ public class Mypage_fragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), User_inform.class);
+                startActivity(intent);
+            }
+        });
+
+        MyCourseView = (MaterialTextView)v.findViewById(R.id.my_course);
+        MyCourseView.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), User_Course.class);
                 startActivity(intent);
             }
         });

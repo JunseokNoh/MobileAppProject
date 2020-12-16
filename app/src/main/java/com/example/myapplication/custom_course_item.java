@@ -5,12 +5,22 @@ public class custom_course_item {
     private String Custom_course_detail;
     private String Latitude;
     private String Longitude;
+    private String Km;
 
-    public custom_course_item(String custom_course_name, String custom_course_detail, String latitude, String longitude){
+    public custom_course_item(String custom_course_name, String custom_course_detail, String latitude, String longitude, String km){
         Custom_course_name = custom_course_name;
         Custom_course_detail = custom_course_detail;
         Latitude = latitude;
         Longitude = longitude;
+        Km = km;
+    }
+
+    public String getKm() {
+        return Km;
+    }
+
+    public void setKm(String km) {
+        Km = km;
     }
 
     public void setLongitude(String longitude) {

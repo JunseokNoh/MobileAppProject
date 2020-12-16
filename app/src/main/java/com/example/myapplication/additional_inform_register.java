@@ -110,7 +110,6 @@ public class additional_inform_register extends AppCompatActivity {
                     if(login_type.equals("general")){ //일반 회원가입
                         ThreadTask<Object> result = getThreadTask_normal_sing_up(email, pw, institution_name, institution_phone_number, address, "/normal_sign_up");
                         result.execute(ip);
-                        Log.e("asdfasdfasdf", Integer.toString(result.getResult()));
                         if(result.getResult() == 2){
                             //휴대폰 번호 양식 에러 (재입력 요구)
                         }

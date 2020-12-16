@@ -9,14 +9,24 @@ public class course_item {
     private String Address;
     private String Place_number;
     private String Preference;
+    private String ThumURL;
 
-    public course_item(String place_name, String address, String latitude, String longitude, String place_number, String preference){
+    public course_item(String place_name, String address, String latitude, String longitude, String place_number, String preference, String thumURL){
         Place_name = place_name;
         Address = address;
         Latitude = latitude;
         Longitude = longitude;
         Place_number = place_number;
         Preference = preference;
+        ThumURL = thumURL;
+    }
+
+    public void setThumURL(String thumURL) {
+        ThumURL = thumURL;
+    }
+
+    public String getThumURL() {
+        return ThumURL;
     }
 
     public void setPreference(String preference) {

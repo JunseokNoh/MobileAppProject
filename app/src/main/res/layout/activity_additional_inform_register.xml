@@ -99,16 +99,19 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="68dp"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:layout_margin="5dp">
 
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/institution_name"
                     android:layout_width="match_parent"
+                    android:layout_margin="5dp"
                     android:layout_height="58dp"
                     android:gravity="left|center"
                     android:hint="이름"
-                    android:background="@drawable/edge4"
+                    android:elevation="3dp"
+                    android:background="@drawable/edge24"
                     android:inputType="textEmailAddress"
                     android:paddingLeft="13sp"
                     android:textSize="15sp" />
@@ -121,17 +124,20 @@
                 android:layout_width="match_parent"
                 android:layout_height="68dp"
                 android:orientation="horizontal"
-                android:layout_marginTop="10dp">
+                android:layout_marginTop="10dp"
+                android:layout_margin="5dp">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/institution_phone_number"
                     android:layout_width="match_parent"
                     android:layout_height="58dp"
+                    android:layout_margin="5dp"
                     android:gravity="left|center"
                     android:hint="연락처"
                     android:inputType="phone"
                     android:paddingLeft="13sp"
-                    android:background="@drawable/edge4"
+                    android:elevation="3dp"
+                    android:background="@drawable/edge24"
                     android:textSize="15sp" />
 
             </LinearLayout>
@@ -140,15 +146,18 @@
                 android:layout_width="match_parent"
                 android:layout_height="68dp"
                 android:orientation="horizontal"
+                android:layout_margin="5dp"
                 android:layout_marginTop="10dp">
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/institution_street_name_address"
                     android:layout_width="match_parent"
                     android:layout_height="58dp"
-                    android:background="@drawable/edge4"
+                    android:background="@drawable/edge24"
                     android:gravity="left|center"
                     android:hint="도로명 주소"
+                    android:layout_margin="5dp"
+                    android:elevation="3dp"
                     android:paddingLeft="13sp"
                     android:textSize="15sp" />
 
@@ -158,25 +167,30 @@
                 android:layout_width="match_parent"
                 android:layout_height="68dp"
                 android:orientation="horizontal"
+                android:layout_margin="5dp"
                 android:layout_marginTop="10dp">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/institution_detail_address"
                     android:layout_width="match_parent"
                     android:layout_height="58dp"
-                    android:background="@drawable/edge4"
+                    android:layout_margin="5dp"
+                    android:background="@drawable/edge24"
                     android:gravity="left|center"
+                    android:elevation="3dp"
                     android:hint="세부 주소"
                     android:paddingLeft="13sp"
                     android:textSize="15sp" />
             </LinearLayout>
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="58dp"
+                android:layout_height="63dp"
                 android:orientation="horizontal"
+                android:layout_margin="5dp"
                 android:layout_marginTop="10dp">
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/confirm_button2"
+                    android:layout_margin="5dp"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:text="확 인"

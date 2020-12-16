@@ -6,23 +6,85 @@
     android:layout_height="match_parent"
     tools:context=".Home_fragment"
     android:background="@drawable/edge6">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        >
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="360dp"
-            android:orientation="vertical"
-            android:background="@drawable/edge19">
-            <com.google.android.material.textview.MaterialTextView
+            android:layout_height="300dp"
+            android:background="#7597AFE0"
+           >
+
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:text="코스 랭킹"
-                android:textColor="@color/login_font"
-                android:textSize="22sp"
-                android:gravity="center"
-                android:textStyle="bold" />
+                android:layout_height="match_parent">
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_courserankin"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/materialTextView2"
+                    android:layout_width="146dp"
+                    android:layout_height="54dp"
+                    android:layout_marginTop="24dp"
+                    android:gravity="center"
+                    android:text="코스 랭킹"
+                    android:textColor="@color/title_font"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.498"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageView
+                    android:id="@+id/imageView3"
+                    android:layout_width="187dp"
+                    android:layout_height="214dp"
+                    android:src="@drawable/main_pic3"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageView
+                    android:layout_width="187dp"
+                    android:layout_height="214dp"
+                    android:src="@drawable/main_pic2"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.986"
+
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:src="@drawable/main_pic1"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/materialTextView2" />
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="220dp"
+            android:orientation="vertical"
+           >
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/Recycler_view"
@@ -33,14 +95,38 @@
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/recommended_courses"
+            android:layout_height="wrap_content">
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="80dp"
-                android:layout_margin="10dp"
-                android:text="추천코스 보기(반경 3km)"
-                android:textSize="20sp"/>
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/recommended_courses"
+                    android:layout_width="wrap_content"
+                    android:layout_height="50dp"
+                    android:layout_margin="10dp"
+                    android:layout_marginTop="4dp"
+
+                    android:background="@drawable/button_img1"
+
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="추천코스 보기(반경 3km)"
+                    android:textColor="@color/colorAccent"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="@+id/recommended_courses"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/recommended_courses" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
         </LinearLayout>
     </LinearLayout>
 

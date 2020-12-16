@@ -20,9 +20,16 @@ import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.example.myapplication.Thread.ThreadTask;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -61,11 +68,16 @@ class RecycleAdaptors_categories_Curse_rank extends RecyclerView.Adapter<Recycle
     private SharedPreferences sensor_status_pref;
     private SharedPreferences.Editor sensor_status_editor;
 
+
+
     public RecycleAdaptors_categories_Curse_rank(String ip, GoogleMap googleMap) {
         this.ip = ip;
         this.googleMap = googleMap;
     }
 
+    public void setSelectedPosition(int selectedPosition) {
+        this.selectedPosition = selectedPosition;
+    }
     public void addItem(course_item item){
         CategoriesCourseDataList.add(item);
     }
@@ -114,16 +126,15 @@ class RecycleAdaptors_categories_Curse_rank extends RecyclerView.Adapter<Recycle
             layout.setBackground(parent.getContext().getDrawable(R.drawable.edge21));
         }
         else{//선택이 안되면 나머지는 다 흰색으로 바꿔줌
-            layout.setBackground(parent.getContext().getDrawable(R.drawable.edge2));
+            layout.setBackground(parent.getContext().getDrawable(R.drawable.edge23));
             holder.view.setSelected(false);
         }
-
         holder.view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 selectedPosition = position;
-                holder.view.setSelected(true);
+                //holder.view.setSelected(true);
                 notifyItemChanged(selectedPosition);
                 notifyDataSetChanged();
                 double Latitude;
@@ -159,6 +170,7 @@ class RecycleAdaptors_categories_Curse_rank extends RecyclerView.Adapter<Recycle
         holder.setItem(item, parent);
         holder.setLikeButton(parent);
     }
+
     private void setCustomMarkerView() {
         marker_root_view = LayoutInflater.from(parent.getContext()).inflate(R.layout.marker_hydrogenstation, null);
         tv_marker = (TextView) marker_root_view.findViewById(R.id.tv_marker);
@@ -276,7 +288,7 @@ class RecycleAdaptors_categories_Curse_rank extends RecyclerView.Adapter<Recycle
             Course_name  = (TextView)itemView.findViewById(R.id.categories_courses_name);
             Course_detail = (TextView)itemView.findViewById(R.id.categories_courses_destination);
             like_text = itemView.findViewById(R.id.place_like_count);
-
+            like_button = itemView.findViewById(R.id.like_button);
             Place_image = itemView.findViewById(R.id.Place_image);
         }
 
@@ -289,13 +301,26 @@ class RecycleAdaptors_categories_Curse_rank extends RecyclerView.Adapter<Recycle
                 address = address.substring(0, Delete_index-1);
             }
             Course_detail.setText(address);
-            String imageUrl = "https://search.pstatic.net/common/?autoRotate=true&quality=95&type=w750&src=https%3A%2F%2Fmyplace-phinf.pstatic.net%2F20201215_8%2F1608019505600mWPUm_JPEG%2Fupload_93cc3717fb91900c13b2f68b3a9ab946.jpg";
-            Glide.with(parent.getContext()).load(imageUrl).into(Place_image);
+            //String testUrl = "http://search.pstatic.net/common/?autoRotate=true&quality=95&type=w750&src=https%3A%2F%2Fmyplace-phinf.pstatic.net%2F20201215_8%2F1608019505600mWPUm_JPEG%2Fupload_93cc3717fb91900c13b2f68b3a9ab946.jpg";
+            //String testUrl = "https://ldb-phinf.pstatic.net/20170711_282/1499738599754pJSvu_JPEG/186661513339210_0.jpeg";
+            //String testUrl = "http://222.104.195.117:5002/blank_img";
+            String imageUrl = item.getThumURL();
+            System.out.println(imageUrl);
+            Glide.with(parent.getContext())
+                    .load(imageUrl)
+                    //.placeholder(R.drawable.ic_equalizer_24px)
+                    .error(R.drawable.ic_launcher_foreground)
+                    .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+                    .override(100,100)
+                    .into(Place_image);
+
+
             like_text.setText("추천수 "+ item.getPreference());
+
         }
 
         public void setLikeButton( ViewGroup parent){
-            like_button = itemView.findViewById(R.id.like_button);
+            like_button = itemView.findViewById(R.id.like_button_categories);
 
             user_information_pref = parent.getContext().getSharedPreferences("login_information", Activity.MODE_PRIVATE);
             String email = user_information_pref.getString("email", "");
@@ -305,34 +330,34 @@ class RecycleAdaptors_categories_Curse_rank extends RecyclerView.Adapter<Recycle
             result.execute(ip);
 
             if(result.getResult() == 1){//클릭이 아직 안됨.
-
+                like_button.setBackground(ContextCompat.getDrawable(parent.getContext(), R.drawable.ic_like));
             }
             else if(result.getResult() == 0){//이미클릭 됨
                 like_button.setChecked(true);
+                like_button.setBackground(ContextCompat.getDrawable(parent.getContext(), R.drawable.ic_heart));
             }
 
             like_button.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     if(isChecked){
-                        Toast.makeText(parent.getContext(), "좋아요 눌렀다",Toast.LENGTH_SHORT).show();
                         ThreadTask<Object> result = getThreadTask_getMAPInform("unchecked", email, num, "/like_button_v2");
                         result.execute(ip);
                         like_text.setText("추천수 "+Integer.toString(result.getResult()));
 
+                        like_button.setBackground(ContextCompat.getDrawable(parent.getContext(), R.drawable.ic_heart));
                     }
                     else{
-                        Toast.makeText(parent.getContext(), "좋아요 해제",Toast.LENGTH_SHORT).show();
                         ThreadTask<Object> result = getThreadTask_getMAPInform("checked", email, num, "/like_button_v2");
                         result.execute(ip);
                         like_text.setText("추천수 "+Integer.toString(result.getResult()));
+                        like_button.setBackground(ContextCompat.getDrawable(parent.getContext(), R.drawable.ic_like));
                     }
                 }
             });
         }
 
         private ThreadTask<Object> getThreadTask_getLikeStatus(String Email, String Num, String Latitude, String Longitude, String Radius ,String Router_name){
-
             return new ThreadTask<Object>() {
                 private int response_result;
                 private String error_code;

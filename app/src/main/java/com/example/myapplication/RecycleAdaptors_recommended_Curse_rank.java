@@ -18,6 +18,7 @@ import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplication.Thread.ThreadTask;
@@ -59,6 +60,8 @@ class RecycleAdaptors_recommended_Curse_rank extends RecyclerView.Adapter<Recycl
     private TextView tv_marker;
     private String Course_number;
     private Recommanded_course_item item;
+    int selectedPosition = -1;
+    int scrollPosition;
     private SharedPreferences sensor_status_pref;
     private SharedPreferences.Editor sensor_status_editor;
 
@@ -73,6 +76,14 @@ class RecycleAdaptors_recommended_Curse_rank extends RecyclerView.Adapter<Recycl
 
     public void setItems(ArrayList<Recommanded_course_item> items){
         RecommandedCourseDataList = items;
+    }
+
+    public void setScrollPosition(int scrollPosition) {
+        this.scrollPosition = scrollPosition;
+    }
+
+    public int getScrollPosition() {
+        return scrollPosition;
     }
 
     public void setCourse_number(String course_number) {
@@ -113,9 +124,29 @@ class RecycleAdaptors_recommended_Curse_rank extends RecyclerView.Adapter<Recycl
         ArrayList<course_item> course_list = item.getCourse_list();
 //        sensor_status_pref = parent.getContext().getSharedPreferences("Sensor_status", Activity.MODE_PRIVATE);
 //        sensor_status_editor = sensor_status_pref.edit();
+        LinearLayout layout = holder.view.findViewById(R.id.recommended_courses_item);
+
+        if(Course_number == null){
+            if(selectedPosition == position && item != null){ //선택되면
+                layout.setBackground(parent.getContext().getDrawable(R.drawable.edge21));
+            }
+            else{//선택이 안되면 나머지는 다 흰색으로 바꿔줌
+                layout.setBackground(parent.getContext().getDrawable(R.drawable.edge24));
+                holder.view.setSelected(false);
+            }
+        }
+
         holder.view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(Course_number == null){
+                    selectedPosition = position;
+                    holder.view.setSelected(true);
+
+                   // notifyItemChanged(selectedPosition);
+                    notifyDataSetChanged();
+                }
+
                 double Latitude;
                 double Longtitude;
 
@@ -133,7 +164,7 @@ class RecycleAdaptors_recommended_Curse_rank extends RecyclerView.Adapter<Recycl
                     latngs.add(new LatLng(Latitude, Longtitude));
                     polylineOptions.add(new LatLng(Latitude,Longtitude));
                     LatLng Starting_Point = new LatLng(Latitude, Longtitude); // 스타팅 지점
-                    googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(Starting_Point, 13));
+                    googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(Starting_Point, 14));
 
                     tv_marker.setText(course_list.get(i).getPlace_name());
                     markerOptions.position(new LatLng(Latitude,Longtitude));
@@ -155,6 +186,8 @@ class RecycleAdaptors_recommended_Curse_rank extends RecyclerView.Adapter<Recycl
         if(Course_number != null && item.getCourse_id().equals(Course_number)){
             holder.view.setSelected(true);
             if(holder.view.performClick()){
+                layout.setBackground(parent.getContext().getDrawable(R.drawable.edge21));
+                Course_number = null;
                 //Toast.makeText(parent.getContext(), "선택됐다", Toast.LENGTH_SHORT).show();
             }
         }
@@ -236,6 +269,7 @@ class RecycleAdaptors_recommended_Curse_rank extends RecyclerView.Adapter<Recycl
             String Toggle_state = Recommend_information_pref.getString("Toggle" + item.getPreference(), "false");
             if(Toggle_state.equals("true")){
                 like_button.setChecked(true);
+                like_button.setBackground(ContextCompat.getDrawable(parent.getContext(), R.drawable.ic_heart));
             }
 
             like_button.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -248,7 +282,7 @@ class RecycleAdaptors_recommended_Curse_rank extends RecyclerView.Adapter<Recycl
                         item.setPreference(Integer.toString( (Integer.parseInt(item.getPreference()) + 1)));
                         Recommend_infromation_editor.putString("Toggle" + item.getPreference() , "true");
                         Recommend_infromation_editor.commit();
-
+                        like_button.setBackground(ContextCompat.getDrawable(parent.getContext(), R.drawable.ic_heart));
                         Course_detail.setText("추천수 : " +item.getPreference());
                         Log.e("추천코스 좋아요 눌러짐 ",Course_id);
                     }
@@ -261,6 +295,7 @@ class RecycleAdaptors_recommended_Curse_rank extends RecyclerView.Adapter<Recycl
 
                         item.setPreference(Integer.toString( (Integer.parseInt(item.getPreference()) - 1)));
                         Course_detail.setText("추천수 : " +item.getPreference());
+                        like_button.setBackground(ContextCompat.getDrawable(parent.getContext(), R.drawable.ic_like));
                         Log.e("추천코스 좋아요 꺼짐 ",Course_id);
                     }
                 }

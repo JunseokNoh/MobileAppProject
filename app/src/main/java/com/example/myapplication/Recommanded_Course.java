@@ -149,13 +149,15 @@ public class Recommanded_Course extends AppCompatActivity  implements OnMapReady
                     String Longitude = Double.toString(temp_object.getDouble("longitude"));
                     String Course_num = Integer.toString(temp_object.getInt("Course_num"));
                     String Preference = Integer.toString(temp_object.getInt("Preference"));
+                    String thumURL = "";
+
                     if(Preference == null){
                         Preference ="0";
                     }
                     Log.e("Recommanded_course test", String.format("%s %s %s %s %s %s", Course_name, Course_num,Name, address, Latitude, Longitude));
                     current_course_num = Integer.parseInt(Course_num);
 
-                    course_list.add(new course_item(Name, address, Latitude, Longitude,"0", Preference));
+                    course_list.add(new course_item(Name, address, Latitude, Longitude,"0", Preference, thumURL));
 
 
                     if(i + 1 < Course_total_array.length()){
@@ -181,13 +183,10 @@ public class Recommanded_Course extends AppCompatActivity  implements OnMapReady
 
             }
         }
-
         FragmentManager fragmentManager = getFragmentManager();
         MapFragment mapFragment = (MapFragment) fragmentManager.findFragmentById(R.id.map);
         // 맵이 실행되면 onMapReady 실행
         mapFragment.getMapAsync(this);
-
-
     }
 
     private ThreadTask<Object> getThreadTask_getMAPInform(String starting_latitude, String starting_longitude, String Router_name){
@@ -403,10 +402,19 @@ public class Recommanded_Course extends AppCompatActivity  implements OnMapReady
 
         recycleAdaptors = new RecycleAdaptors_recommended_Curse_rank(ip, getGoogleMap());
         recycleAdaptors.setItems(RecommandedCourseDataList);
+
         if(getCourse_number_from_Home != null){
             recycleAdaptors.setCourse_number(getCourse_number_from_Home);
+            for (int i = 0 ; i < RecommandedCourseDataList.size() ; i++){
+                if(RecommandedCourseDataList.get(i).getCourse_id().equals(getCourse_number_from_Home)){
+                    Recommanded_recycler_view.scrollToPosition(i);
+                    break;
+                }
+            }
         }
+
         Recommanded_recycler_view.setAdapter(recycleAdaptors);
+
 
     }
     @Override

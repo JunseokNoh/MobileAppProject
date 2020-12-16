@@ -22,13 +22,15 @@ android:background="@drawable/edge6">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="58dp">
+            android:layout_height="60dp">
 
             <com.google.android.material.appbar.MaterialToolbar
                 android:id="@+id/Sensorinform_toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="58dp"
-                android:background="@drawable/edge8"
+                android:background="@drawable/edge24"
+                android:elevation="2dp"
+                android:layout_marginBottom="2dp"
                 tools:ignore="MissingConstraints">
 
                 <com.google.android.material.textview.MaterialTextView
@@ -112,7 +114,6 @@ android:background="@drawable/edge6">
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:background="@drawable/edge9"
-
                         tools:ignore="MissingConstraints" />
 
                     <androidx.constraintlayout.widget.ConstraintLayout
@@ -132,7 +133,7 @@ android:background="@drawable/edge6">
 
                             <LinearLayout
                                 android:layout_width="200dp"
-                                android:layout_height="80dp"/>
+                                android:layout_height="80dp" />
 
 
                         </LinearLayout>
@@ -140,105 +141,106 @@ android:background="@drawable/edge6">
                         <LinearLayout
                             android:layout_width="350dp"
                             android:layout_height="match_parent"
+                            android:orientation="vertical"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/linearLayout3"
-                            android:orientation="vertical">
+                            app:layout_constraintTop_toBottomOf="@+id/linearLayout3">
+
                             <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="65dp"
-                                android:orientation="vertical"
-                                android:background="@drawable/edge11">
+                                android:background="@drawable/edge11"
+                                android:orientation="vertical">
 
                                 <com.google.android.material.textview.MaterialTextView
                                     android:layout_width="match_parent"
                                     android:layout_height="25dp"
+                                    android:gravity="center|left"
                                     android:paddingLeft="20dp"
                                     android:text="Email"
-                                    android:gravity="center|left"
-                                    android:textSize="18sp"
                                     android:textColor="@color/login_font"
-                                    android:textStyle="bold"/>
+                                    android:textSize="18sp"
+                                    android:textStyle="bold" />
 
                                 <com.google.android.material.textview.MaterialTextView
                                     android:id="@+id/Email"
                                     android:layout_width="match_parent"
-                                    android:paddingLeft="20dp"
                                     android:layout_height="40dp"
-                                    android:text=""
                                     android:gravity="center|left"
+                                    android:paddingLeft="20dp"
+                                    android:text=""
                                     android:textColor="@color/login_font"
-                                    android:textSize="16sp"
-                                    />
+                                    android:textSize="16sp" />
                             </LinearLayout>
+
                             <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="65dp"
-                                android:orientation="vertical"
                                 android:layout_marginTop="10dp"
-                                android:background="@drawable/edge11">
+                                android:background="@drawable/edge11"
+                                android:orientation="vertical">
 
                                 <com.google.android.material.textview.MaterialTextView
                                     android:layout_width="match_parent"
                                     android:layout_height="25dp"
+                                    android:gravity="center|left"
                                     android:paddingLeft="20dp"
                                     android:text="전화번호"
-                                    android:gravity="center|left"
-                                    android:textSize="18sp"
                                     android:textColor="@color/login_font"
-                                    android:textStyle="bold"/>
+                                    android:textSize="18sp"
+                                    android:textStyle="bold" />
 
                                 <com.google.android.material.textview.MaterialTextView
                                     android:id="@+id/Phonenumber"
                                     android:layout_width="match_parent"
-                                    android:paddingLeft="20dp"
                                     android:layout_height="40dp"
-                                    android:text=""
                                     android:gravity="center|left"
+                                    android:paddingLeft="20dp"
+                                    android:text=""
                                     android:textColor="@color/login_font"
-                                    android:textSize="16sp"
-                                    />
+                                    android:textSize="16sp" />
                             </LinearLayout>
+
                             <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="85dp"
-                                android:orientation="vertical"
                                 android:layout_marginTop="10dp"
-                                android:background="@drawable/edge11">
+                                android:background="@drawable/edge11"
+                                android:orientation="vertical">
 
                                 <com.google.android.material.textview.MaterialTextView
                                     android:layout_width="match_parent"
-                                    android:layout_height="25dp"
+                                    android:layout_height="20dp"
+                                    android:gravity="center|left"
                                     android:paddingLeft="20dp"
                                     android:text="주소"
-                                    android:gravity="center|left"
-                                    android:textSize="18sp"
                                     android:textColor="@color/login_font"
-                                    android:textStyle="bold"/>
+                                    android:textSize="18sp"
+                                    android:textStyle="bold" />
 
                                 <com.google.android.material.textview.MaterialTextView
                                     android:id="@+id/Address"
                                     android:layout_width="match_parent"
-                                    android:paddingLeft="20dp"
-                                    android:layout_height="60dp"
-                                    android:text=""
+                                    android:layout_height="70dp"
                                     android:gravity="center|left"
+                                    android:paddingLeft="20dp"
+                                    android:text=""
                                     android:textColor="@color/login_font"
-                                    android:textSize="16sp"
-                                    />
+                                    android:textSize="16sp" />
                             </LinearLayout>
 
                             <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="55dp"
-                                android:orientation="vertical"
-                                android:layout_marginTop="10dp">
+                                android:layout_marginTop="10dp"
+                                android:orientation="vertical">
+
                                 <com.google.android.material.button.MaterialButton
                                     android:id="@+id/goBack_Button"
                                     android:layout_width="match_parent"
                                     android:layout_height="match_parent"
                                     android:text="뒤로가기"
-                                    android:textSize="18dp"/>
+                                    android:textSize="18dp" />
 
 
                             </LinearLayout>

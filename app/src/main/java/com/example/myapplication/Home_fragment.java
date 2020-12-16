@@ -16,6 +16,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.dinuscxj.progressbar.CircleProgressBar;
@@ -53,7 +54,7 @@ public class Home_fragment extends Fragment {
     private RecycleAdaptors_Curse_rank recycleAdaptors;
     private  RecyclerView.LayoutManager layoutManager;
 
-    private MaterialButton Recommended_button;
+    private ImageView Recommended_button;
 
     private String Starting_latitude;
     private String Starting_longitude;
@@ -148,13 +149,15 @@ public class Home_fragment extends Fragment {
                     String Longitude = Double.toString(temp_object.getDouble("longitude"));
                     String Course_num = Integer.toString(temp_object.getInt("Course_num"));
                     String Preference = Integer.toString(temp_object.getInt("Preference"));
+                    String thumURL = "";
+
                     if(Preference == null){
                         Preference ="0";
                     }
                     Log.e("Recommanded_course test", String.format("%s %s %s %s %s %s", Course_name, Course_num, Name, address, Latitude, Longitude));
                     current_course_num = Integer.parseInt(Course_num);
 
-                    course_list.add(new course_item(Name, address, Latitude, Longitude,"0",Preference ));
+                    course_list.add(new course_item(Name, address, Latitude, Longitude,"0",Preference,thumURL ));
 
                     if (i + 1 < Course_total_array.length()) {
                         JSONObject temp_object2 = Course_total_array.getJSONObject(i + 1);

@@ -24,7 +24,10 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -74,7 +77,7 @@ public class CustomCourse extends Fragment implements OnMapReadyCallback, Google
     private static final String ARG_PARAM2 = "param2";
 
     private MaterialButton Create_destination_button;
-    private MaterialButton Custom_courses_confirm_button;
+    private ImageView Custom_courses_confirm_button;
 
     private RecycleAdaptors_custom_course recycleAdaptors;
     private RecyclerView Custom_Course_recycler_view;
@@ -83,6 +86,7 @@ public class CustomCourse extends Fragment implements OnMapReadyCallback, Google
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+    private Spinner KmSpinner;
 
     private GoogleMap googleMap;
     private MapView mapView;
@@ -92,11 +96,14 @@ public class CustomCourse extends Fragment implements OnMapReadyCallback, Google
     private String Custom_course_detail;
     private String Latitude;
     private String Longitude;
+    private String Km;
+
     private String ip;
     private double Starting_latitude;
     private double Starting_longitude;
     private Bundle mbundle;
     private String Course_number;
+    private String km;
 
     private TextView tv_marker;
 
@@ -104,6 +111,9 @@ public class CustomCourse extends Fragment implements OnMapReadyCallback, Google
 
     private SharedPreferences location_information_pref;
     private SharedPreferences.Editor location_infromation_editor;
+
+    private SharedPreferences user_information_pref;
+    private String email;
 
     public CustomCourse() {
         // Required empty public constructor
@@ -136,9 +146,10 @@ public class CustomCourse extends Fragment implements OnMapReadyCallback, Google
             Custom_course_detail = mbundle.getString("address");
             Latitude = mbundle.getString("latitude");
             Longitude = mbundle.getString("longitude");
+            Km = "";
             Log.e("CustomCurse Test", String.format("%s %s %s %s", Custom_course_name, Custom_course_detail, Latitude, Longitude));
             int index = Integer.parseInt(mbundle.getString("index"));
-            custom_course_items.set(index, new custom_course_item(Custom_course_name,Custom_course_detail, Latitude, Longitude ));
+            custom_course_items.set(index, new custom_course_item(Custom_course_name,Custom_course_detail, Latitude, Longitude, Km));
         }
     }
     @Override
@@ -176,6 +187,13 @@ public class CustomCourse extends Fragment implements OnMapReadyCallback, Google
         if(layoutManager != null){
             Custom_Course_recycler_view.setLayoutManager(layoutManager);
         }
+        KmSpinner = (Spinner)v.findViewById(R.id.spinner_km);
+        ArrayAdapter KmAdapter = ArrayAdapter.createFromResource(getContext(),R.array.spinner_km,android.R.layout.simple_spinner_item);
+        KmAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        KmSpinner.setAdapter(KmAdapter);
+
+        km = KmSpinner.getSelectedItem().toString().replace("km", "");
+        mapView = (MapView)v.findViewById(R.id.map);
 
         Create_destination_button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -184,16 +202,21 @@ public class CustomCourse extends Fragment implements OnMapReadyCallback, Google
                 String Custom_course_detail = " ";
                 String Latitude = "";
                 String Longitude = "";
-                custom_course_items.add(new custom_course_item(Custom_course_name, Custom_course_detail, Latitude, Longitude));
+                custom_course_items.add(new custom_course_item(Custom_course_name, Custom_course_detail, Latitude, Longitude, km));
                 recycleAdaptors.setItems(custom_course_items);
                 Custom_Course_recycler_view.setAdapter(recycleAdaptors);
             }
         });
-        mapView = (MapView)v.findViewById(R.id.map);
+
+
         // 맵이 실행되면 onMapReady 실행
         mapView.getMapAsync(this);
 
 
+
+        user_information_pref = getContext().getSharedPreferences("login_information", Activity.MODE_PRIVATE);
+
+        email = user_information_pref.getString("email", "");
         Custom_courses_confirm_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -215,15 +238,13 @@ public class CustomCourse extends Fragment implements OnMapReadyCallback, Google
                                 if(result_cour_number.getResult() == 1){ //코스넘버 받아오기 성공
 
                                     for(int j = 0 ; j <custom_course_items.size() ; j++){
-                                        ThreadTask<Object> result = getThreadTask_put_custom_Course(custom_course_items.get(j), Course_name, "/put_course_information");
+                                        ThreadTask<Object> result = getThreadTask_put_custom_Course(custom_course_items.get(j), Course_name,email,  "/put_course_information");
                                         result.execute(ip);
                                         if(result.getResult() != 1) break;
                                     }
                                     custom_course_items.clear();
                                     recycleAdaptors.setItems(custom_course_items);
                                     Custom_Course_recycler_view.setAdapter(recycleAdaptors);
-
-
 
                                     LatLng starting_point = new LatLng(Starting_latitude, Starting_longitude);
                                     CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(starting_point, 14);
@@ -249,7 +270,7 @@ public class CustomCourse extends Fragment implements OnMapReadyCallback, Google
         return v;
     }
 
-    private ThreadTask<Object> getThreadTask_put_custom_Course(custom_course_item item,String Course_name, String Router_name){
+    private ThreadTask<Object> getThreadTask_put_custom_Course(custom_course_item item,String Course_name,String email, String Router_name){
 
         return new ThreadTask<Object>() {
             private int response_result;
@@ -274,6 +295,7 @@ public class CustomCourse extends Fragment implements OnMapReadyCallback, Google
                 sendObject.put("Address", item.getCustom_course_detail());
                 sendObject.put("Latitude", item.getLatitude());
                 sendObject.put("Longitude", item.getLongitude());
+                sendObject.put("email_address",email);
 
                 Log.e("CustomCourse ", String.format("%s %s %s"
                         ,  item.getCustom_course_detail(), item.getLatitude(), item.getLongitude()));
@@ -505,6 +527,8 @@ public class CustomCourse extends Fragment implements OnMapReadyCallback, Google
 
         recycleAdaptors = new RecycleAdaptors_custom_course((MainActivity)getActivity(), getGoogleMap());
         recycleAdaptors.setItems(custom_course_items);
+        recycleAdaptors.setKm(km);
+        recycleAdaptors.setKmSpinner(KmSpinner);
         Custom_Course_recycler_view.setAdapter(recycleAdaptors);
 
     }

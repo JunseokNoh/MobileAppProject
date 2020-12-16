@@ -1,16 +1,21 @@
 package com.example.myapplication;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.location.Address;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,6 +26,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplication.Thread.ThreadTask;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -57,11 +63,12 @@ public class Categories_coures_fragment extends Fragment  implements OnMapReadyC
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    private static final String ARG_PARAM3 = "param3";
 
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-
+    private String Km;
 
 
     private MaterialToolbar toolbar;
@@ -93,6 +100,7 @@ public class Categories_coures_fragment extends Fragment  implements OnMapReadyC
     private List<Address> list = null;
 
     private SharedPreferences location_information_pref;
+    private ImageButton Search_Button;
 
     public Categories_coures_fragment() {
         // Required empty public constructor
@@ -107,11 +115,12 @@ public class Categories_coures_fragment extends Fragment  implements OnMapReadyC
      * @return A new instance of fragment Categories_coures_fragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static Categories_coures_fragment newInstance(String param1, String param2) {
+    public static Categories_coures_fragment newInstance(String param1, String param2, String param3) {
         Categories_coures_fragment fragment = new Categories_coures_fragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
+        args.putString(ARG_PARAM3, param3);
         fragment.setArguments(args);
         return fragment;
     }
@@ -122,6 +131,7 @@ public class Categories_coures_fragment extends Fragment  implements OnMapReadyC
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
+            Km = getArguments().getString(ARG_PARAM3);
         }
     }
 
@@ -140,6 +150,42 @@ public class Categories_coures_fragment extends Fragment  implements OnMapReadyC
         Starting_latitude = location_information_pref.getString("current_latitude", "");
         Starting_longitude = location_information_pref.getString("current_longitude", "");
 
+        Search_Button = getActivity().findViewById(R.id.Course_search_button);
+        Search_Button.setVisibility(View.VISIBLE);
+        Search_Button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                EditText et = new EditText(getContext());
+                et.setGravity(Gravity.CENTER);
+
+                AlertDialog.Builder msgBuilder = new AlertDialog.Builder(getActivity())
+                        .setTitle("검색")
+                        .setMessage("장소를 입력해주세요.")
+                        .setView(et)
+                        .setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                            @Override public void onClick(DialogInterface dialogInterface, int i)
+                            {
+                                for(int j = 0 ; j < course_list.size() ; j ++){
+                                    if(course_list.get(j).getPlace_name().contains(et.getText().toString())){
+                                        Recommanded_recycler_view.scrollToPosition(j);
+                                        recycleAdaptors.setSelectedPosition(j);
+                                        recycleAdaptors.notifyItemChanged(j);
+                                        recycleAdaptors.notifyDataSetChanged();
+                                        break;
+                                    }
+                                }
+                            } })
+                        .setNegativeButton("취소", new DialogInterface.OnClickListener() {
+                            @Override public void onClick(DialogInterface dialogInterface, int i) {
+
+                            } });
+                AlertDialog msgDlg = msgBuilder.create();
+                msgDlg.show();
+
+
+            }
+        });
         Recommanded_recycler_view = v.findViewById(R.id.recommended_courses_Recycler_view);
         layoutManager =  new LinearLayoutManager(getContext());
         if(layoutManager != null){
@@ -161,7 +207,7 @@ public class Categories_coures_fragment extends Fragment  implements OnMapReadyC
         else if(mParam2.equals("볼거리")){
             kind = "볼거리" ;
         }
-        ThreadTask<Object> result = getThreadTask_getMAPInform(kind,Starting_latitude, Starting_longitude, "3", "/map_category_information");
+        ThreadTask<Object> result = getThreadTask_getMAPInform(kind,Starting_latitude, Starting_longitude, Km, "/map_category_information");
         result.execute(ip);
 
         String input ="{"+
@@ -176,7 +222,7 @@ public class Categories_coures_fragment extends Fragment  implements OnMapReadyC
         }
 
         try {
-            for(int j = 0 ; j < Course_total_array.length() ; j ++){
+            for(int j = 0 ; j < Course_total_array.length()  ; j ++){//Course_total_array.length()
                 JSONObject temp_object = Course_total_array.getJSONObject(j);
                 String Place_name = temp_object.getString("Name");
                 String Place_detail = temp_object.getString("Address");
@@ -184,12 +230,13 @@ public class Categories_coures_fragment extends Fragment  implements OnMapReadyC
                 String Longitude = temp_object.getString("Longitude");
                 String Num = temp_object.getString("Num");
                 String Preference = Integer.toString(temp_object.getInt("Preference"));
+                String thumURL = temp_object.getString("thumURL");
 
                 if(j == 0){
                     Starting_latitude = Latitude;
                     Starting_longitude = Longitude;
                 }
-                course_list.add(new course_item(Place_name, Place_detail, Latitude, Longitude, Num, Preference));
+                course_list.add(new course_item(Place_name, Place_detail, Latitude, Longitude, Num, Preference, thumURL));
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -216,7 +263,7 @@ public class Categories_coures_fragment extends Fragment  implements OnMapReadyC
                     args.putString("latitude", items.getLatitude());
                     args.putString("longitude", items.getLongitude());
                     args.putString("index", mParam1);
-
+                    //args.putString("km", );
                     ((MainActivity)getActivity()).onMoveCustomcourse(args);
                     Toast.makeText(getContext(), "선택되었습니다.", Toast.LENGTH_SHORT).show();
                 }
@@ -232,7 +279,6 @@ public class Categories_coures_fragment extends Fragment  implements OnMapReadyC
             }
         });
         return v;
-
 
     }
 
