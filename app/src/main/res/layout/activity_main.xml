@@ -8,7 +8,7 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     tools:openDrawer="start"
-    android:background="@drawable/edge6">
+    android:background="#75FFFFFF">
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
@@ -22,30 +22,65 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="58dp">
+                android:layout_height="58dp"
+                android:background="@drawable/edge24"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:layout_gravity="center">
 
-                <com.google.android.material.appbar.MaterialToolbar
-                    android:id="@+id/MainActiviy_toolbar"
-                    android:layout_width="match_parent"
-                    android:layout_height="58dp"
-                    android:background="@drawable/edge8"
-                    tools:ignore="MissingConstraints">
-
-                    <com.google.android.material.textview.MaterialTextView
-                        android:id="@+id/toolbar_textview"
+                <LinearLayout
+                    android:layout_width="25dp"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="left">
+                    <ImageView
                         android:layout_width="wrap_content"
+                        android:layout_gravity="left"
+                        android:src="@drawable/ic_marker"
+                        android:layout_height="match_parent"/>
+
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="330dp"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:gravity="center">
+
+                    <com.google.android.material.appbar.MaterialToolbar
+                        android:id="@+id/MainActiviy_toolbar"
+                        android:layout_width="match_parent"
                         android:layout_height="58dp"
                         android:layout_gravity="center"
                         android:gravity="center"
-                        android:textColor="@color/login_font"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="0.0"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/materialTextView" />
+                        tools:ignore="MissingConstraints">
 
-                </com.google.android.material.appbar.MaterialToolbar>
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:id="@+id/toolbar_textview"
+                            android:layout_width="wrap_content"
+                            android:layout_height="58dp"
+                            android:layout_gravity="center"
+                            android:gravity="center"
+                            android:textColor="@color/login_font"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintHorizontal_bias="0.0"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/materialTextView" />
+
+                    </com.google.android.material.appbar.MaterialToolbar>
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="25dp"
+                    android:layout_height="25dp">
+                    <ImageButton
+                        android:id="@+id/Course_search_button"
+                        android:background="@drawable/ic_search"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:visibility="gone"
+                        />
+                </LinearLayout>
             </LinearLayout>
 
             <LinearLayout
