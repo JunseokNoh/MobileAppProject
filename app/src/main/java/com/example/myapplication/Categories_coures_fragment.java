@@ -232,8 +232,8 @@ public class Categories_coures_fragment extends Fragment  implements OnMapReadyC
                 String thumURL = temp_object.getString("thumURL");
 
                 if(j == 0){
-                    Starting_latitude = Latitude;
-                    Starting_longitude = Longitude;
+//                    Starting_latitude = Latitude;
+//                    Starting_longitude = Longitude;
                 }
                 course_list.add(new course_item(Place_name, Place_detail, Latitude, Longitude, Num, Preference, thumURL));
             }

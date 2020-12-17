@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name"> </string>
+    <string name="app_name">P1AN</string>
     <string name="title">새 메모 만들기</string>
     <string name="title_activity_login">LoginActivity</string>
     <string name="prompt_email">이메일 주소</string>
