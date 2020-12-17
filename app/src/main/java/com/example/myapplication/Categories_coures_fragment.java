@@ -87,7 +87,6 @@ public class Categories_coures_fragment extends Fragment  implements OnMapReadyC
     private LinearLayoutManager layoutManager;
 
     private JSONArray Course_total_array;
-    private JSONArray Course_array;
     private String Starting_latitude;
     private String Starting_longitude;
 
